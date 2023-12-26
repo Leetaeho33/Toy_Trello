@@ -2,15 +2,15 @@ package com.example.toy_trello.board.controller;
 
 import com.example.toy_trello.board.dto.BoardCreateRequestDto;
 import com.example.toy_trello.board.dto.BoardResponseDto;
+import com.example.toy_trello.board.entity.Board;
 import com.example.toy_trello.board.service.BoardService;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import java.util.List;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +38,12 @@ public class BoardController {
   public List<BoardResponseDto> getBoardList() {
 
       return boardService.getBoardList();
+
+  }
+
+  @GetMapping("/{boardId}")
+  public Board getBoard(@PathVariable Long boardId) {
+    return boardService.getBoard(boardId);
 
   }
 }

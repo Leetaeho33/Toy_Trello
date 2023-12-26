@@ -37,4 +37,10 @@ public class BoardService {
     return boardResponseDto;
 
   }
+
+  public Board getBoard(Long boardId) {
+    Board board = boardRepository.findById(boardId).orElseThrow(() ->
+        new IllegalArgumentException("게시글이 업습니다."));
+    return board;
+  }
 }
