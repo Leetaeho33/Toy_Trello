@@ -1,5 +1,6 @@
 package com.example.toy_trello.board.entity;
 
+import com.example.toy_trello.domain.util.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "board")
-public class Board {
+public class Board extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
