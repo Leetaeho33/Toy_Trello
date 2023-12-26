@@ -22,11 +22,17 @@ public class Board {
   private Long boardId;
 
   @Column
-  private String boardName;
+  private String boardName;   // 보드 이름
 
   @Column
-  private String background;  //배경색
+  private String backgroundColor;  // 배경 색상
 
   @Column
   private String description; // 설명
+
+  public Board(String boardName, String backgroundColor, String description) {
+    this.boardName = boardName;
+    this.backgroundColor = backgroundColor;
+    this.description = description;
+  }
 }
