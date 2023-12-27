@@ -1,4 +1,4 @@
-package com.example.toy_trello.domain.user;
+package com.example.toy_trello.domain.user.dto;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
