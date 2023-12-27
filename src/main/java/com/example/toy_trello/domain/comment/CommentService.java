@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @Service
@@ -33,11 +35,27 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
+    @Transactional
+    public void delete(Long commentId) {
+        log.info("댓글 삭제");
+        Comment comment = findCommentById(commentId);
+        commentRepository.delete(comment);
+    }
+
+//    public List<CommentResponseDto> getAll() {
+//        log.info("댓글 조회");
+//        List<Comment> comments = commentRepository.findAll();
+//
+//
+//    }
+
     private Comment findCommentById(Long commentId){
         log.info("댓글 조회 시작");
         return commentRepository.findById(commentId).orElseThrow(()->
                 new IllegalArgumentException("해당 댓글은 존재하지 않습니다."));
     }
+
+
 
 //    private boolean checkAuthorization(User user, Comment comment){
 //        log.info("작성자 인가 확인");
