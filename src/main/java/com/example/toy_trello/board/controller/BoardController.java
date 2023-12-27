@@ -35,20 +35,17 @@ public class BoardController {
     return ResponseEntity.ok().body(new CommonResponseDto("생성 되었습니다.", HttpStatus.OK.value()));
   }
 
-  @GetMapping
-  public List<Board> getBoardList() {
-    return boardService.getBoardList();
-  }
-
 //  @GetMapping
-//  public Page<BoardResponseDto> getBoardList(@RequestParam("page") int page,
-//                                             @RequestParam("size") int size,
-//                                             @RequestParam("sortBy") String sortBy,
-//                                             @RequestParam("isAsc") boolean isAsc) {
-//
-//      return boardService.getBoardList(page-1, size, sortBy, isAsc);
-//
+//  public List<Board> getBoardList() {
+//    return boardService.getBoardList();
 //  }
+
+  @GetMapping
+  public Page<BoardResponseDto> getBoardList(Pageable pageable) {
+
+      return boardService.getBoardList(pageable);
+
+  }
 
   @GetMapping("/{boardId}")
   public Board getBoard(@PathVariable Long boardId) {

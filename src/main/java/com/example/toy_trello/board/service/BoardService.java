@@ -1,10 +1,16 @@
 package com.example.toy_trello.board.service;
 
 import com.example.toy_trello.board.dto.BoardCreateRequestDto;
+import com.example.toy_trello.board.dto.BoardResponseDto;
 import com.example.toy_trello.board.entity.Board;
 import com.example.toy_trello.board.repository.BoardRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,10 +25,20 @@ public class BoardService {
     boardRepository.save(board);
   }
 
-  public List<Board> getBoardList() {
+//  public List<Board> getBoardList() {
+//
+//    return boardRepository.findAll();
+//  }
+public Page<BoardResponseDto> getBoardList(Pageable pageable) {
+  Page<Board> boardPage = boardRepository.findAll(pageable);
 
-    return boardRepository.findAll();
-  }
+  return boardPage.map(board ->
+      new BoardResponseDto(board.getBoardId(),
+                           board.getBoardName(),
+                           board.getDescription(),
+                           board.getBackgroundColor()));
+
+}
 
 //  public Page<BoardResponseDto> getBoardList(int page,
 //                                             int size,
@@ -71,4 +87,6 @@ public class BoardService {
     // 수정이나 삭제할 때 예외처리 메세지를 다르게 하고 싶을땐 어떻게 해야할까..
     return board;
   }
+
+
 }

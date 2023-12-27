@@ -16,4 +16,11 @@ public class BoardResponseDto {
         this.backgroundColor = board.getBackgroundColor();
         this.description = board.getDescription();
     }
+
+  public BoardResponseDto(Long boardId, String boardName, String description, String backgroundColor) {
+        this.id = boardId;
+        this.boardName = boardName;
+        this.backgroundColor = backgroundColor;
+        this.description = description;
+  }
 }

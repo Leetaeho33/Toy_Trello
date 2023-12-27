@@ -38,7 +38,6 @@ public class Board extends BaseEntity {
 //  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
 //  private List<Column> columnList;
 
-
   public Board(BoardCreateRequestDto boardCreateRequestDto) {
     this.boardName = boardCreateRequestDto.getBoardName();
     this.backgroundColor = boardCreateRequestDto.getBackgroundColor();
