@@ -36,7 +36,7 @@ public class Board extends BaseEntity {
   @Column
   private String description; // 설명
 
-//  @ManyToOne
+//  @ManyToMany
 //  private User userId;
 
 //  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
