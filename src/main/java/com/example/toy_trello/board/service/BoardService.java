@@ -40,7 +40,16 @@ public class BoardService {
 
   public Board getBoard(Long boardId) {
     Board board = boardRepository.findById(boardId).orElseThrow(() ->
-        new IllegalArgumentException("게시글이 업습니다."));
+        new IllegalArgumentException("게시글이 없습니다."));
     return board;
+  }
+
+  public void updateBoard(Long boardId, BoardCreateRequestDto boardCreateRequestDto) {
+    Board board = boardRepository.findById(boardId).orElseThrow(() ->
+        new IllegalArgumentException("게시물이 없습니다."));
+
+    board.update(boardCreateRequestDto);
+
+    boardRepository.save(board);
   }
 }

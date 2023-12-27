@@ -9,7 +9,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,5 +47,16 @@ public class BoardController {
   public Board getBoard(@PathVariable Long boardId) {
     return boardService.getBoard(boardId);
 
+  }
+
+  @PatchMapping("/{boardId}")
+  public ResponseEntity<CommonResponseDto> updateBoard(@PathVariable Long boardId,
+                                                       @RequestBody BoardCreateRequestDto boardCreateRequestDto){
+    try {
+      boardService.updateBoard(boardId, boardCreateRequestDto);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(new CommonResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+    }
+    return ResponseEntity.ok().body(new CommonResponseDto("수정 되었습니다.", HttpStatus.OK.value()));
   }
 }
