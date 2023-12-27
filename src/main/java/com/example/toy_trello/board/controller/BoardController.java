@@ -7,14 +7,18 @@ import com.example.toy_trello.board.service.BoardService;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,19 +31,24 @@ public class BoardController {
   @PostMapping
   public ResponseEntity<CommonResponseDto> createBoard(@RequestBody BoardCreateRequestDto boardCreateRequestDto) {
 
-    try {
-      boardService.createBoard(boardCreateRequestDto);
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body(new CommonResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
-    }
+    boardService.createBoard(boardCreateRequestDto);
     return ResponseEntity.ok().body(new CommonResponseDto("생성 되었습니다.", HttpStatus.OK.value()));
   }
 
   @GetMapping
-  public List<BoardResponseDto> getBoardList() {
-      return boardService.getBoardList();
-
+  public List<Board> getBoardList() {
+    return boardService.getBoardList();
   }
+
+//  @GetMapping
+//  public Page<BoardResponseDto> getBoardList(@RequestParam("page") int page,
+//                                             @RequestParam("size") int size,
+//                                             @RequestParam("sortBy") String sortBy,
+//                                             @RequestParam("isAsc") boolean isAsc) {
+//
+//      return boardService.getBoardList(page-1, size, sortBy, isAsc);
+//
+//  }
 
   @GetMapping("/{boardId}")
   public Board getBoard(@PathVariable Long boardId) {
@@ -50,11 +59,15 @@ public class BoardController {
   @PatchMapping("/{boardId}")
   public ResponseEntity<CommonResponseDto> updateBoard(@PathVariable Long boardId,
                                                        @RequestBody BoardCreateRequestDto boardCreateRequestDto){
-    try {
       boardService.updateBoard(boardId, boardCreateRequestDto);
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body(new CommonResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
-    }
     return ResponseEntity.ok().body(new CommonResponseDto("수정 되었습니다.", HttpStatus.OK.value()));
+  }
+
+  @DeleteMapping("/{boardId}")
+  public ResponseEntity<CommonResponseDto> deleteBoard(@PathVariable Long boardId) {
+
+      boardService.deleteBoard(boardId);
+    return ResponseEntity.ok().body(new CommonResponseDto("삭제 되었습니다.", HttpStatus.OK.value()));
+
   }
 }

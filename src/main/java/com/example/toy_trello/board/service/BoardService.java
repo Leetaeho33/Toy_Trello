@@ -1,10 +1,8 @@
 package com.example.toy_trello.board.service;
 
 import com.example.toy_trello.board.dto.BoardCreateRequestDto;
-import com.example.toy_trello.board.dto.BoardResponseDto;
 import com.example.toy_trello.board.entity.Board;
 import com.example.toy_trello.board.repository.BoardRepository;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,40 +14,61 @@ public class BoardService {
   private final BoardRepository boardRepository;
 
   public void createBoard(BoardCreateRequestDto boardCreateRequestDto) {
-    String boardName = boardCreateRequestDto.getBoardName();
-    String backgroundColor = boardCreateRequestDto.getBackgroundColor();
-    String description = boardCreateRequestDto.getDescription();
-
-    Board board = new Board(boardName, backgroundColor, description);
+    Board board = new Board(boardCreateRequestDto);
 
     boardRepository.save(board);
-
   }
 
-  public List<BoardResponseDto> getBoardList() {
-    List<Board> boardList = boardRepository.findAll();
-    List<BoardResponseDto> boardResponseDto = new ArrayList<>();
+  public List<Board> getBoardList() {
 
-    for (Board board : boardList) {
-      boardResponseDto.add(new BoardResponseDto(board));
-    }
-
-    return boardResponseDto;
-
+    return boardRepository.findAll();
   }
+
+//  public Page<BoardResponseDto> getBoardList(int page,
+//                                             int size,
+//                                             String sortBy,
+//                                             boolean isAsc) {
+//
+//    Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+//    Sort sort = Sort.by(direction, sortBy);
+//    Pageable pageable = PageRequest.of(page, size, sort);
+//
+//    // 유저 가져오기 (권한 확인하기)
+//
+//    Page<Board> boardList;
+//
+//    boardList = boardRepository.findAll(pageable);
+//
+//    for (Board board : boardList) {
+//      boardResponseDto.add(new BoardResponseDto(board));
+//    }
+//
+//    return boardList.map(BoardResponseDto::new);
+//  }
 
   public Board getBoard(Long boardId) {
-    Board board = boardRepository.findById(boardId).orElseThrow(() ->
-        new IllegalArgumentException("게시글이 없습니다."));
+    Board board = findById(boardId);
     return board;
   }
 
   public void updateBoard(Long boardId, BoardCreateRequestDto boardCreateRequestDto) {
-    Board board = boardRepository.findById(boardId).orElseThrow(() ->
-        new IllegalArgumentException("게시물이 없습니다."));
+    Board board = findById(boardId);
 
     board.update(boardCreateRequestDto);
 
     boardRepository.save(board);
+  }
+
+
+  public void deleteBoard(Long boardId) {
+    Board board = findById(boardId);
+     boardRepository.delete(board);
+  }
+
+  private Board findById(Long boardId) {
+    Board board = boardRepository.findById(boardId).orElseThrow(()->
+        new IllegalArgumentException("게시글이 존재하지 않습니다."));
+    // 수정이나 삭제할 때 예외처리 메세지를 다르게 하고 싶을땐 어떻게 해야할까..
+    return board;
   }
 }
