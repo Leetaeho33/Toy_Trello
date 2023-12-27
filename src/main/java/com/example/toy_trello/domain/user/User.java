@@ -1,5 +1,6 @@
 package com.example.toy_trello.domain.user;
 
+import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
 import com.example.toy_trello.domain.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

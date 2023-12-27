@@ -1,5 +1,8 @@
 package com.example.toy_trello.domain.user;
 
+import com.example.toy_trello.domain.user.dto.UserLoginRequestDto;
+import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,5 +41,20 @@ public class UserService {
 
         User user = new User(userSignupRequestDto, encodedPassword);
         userRepository.save(user);
+    }
+
+    public void login(UserLoginRequestDto userLoginRequestDto) {
+        String username = userLoginRequestDto.getUsername();
+        String password = userLoginRequestDto.getPassword();
+
+        // username 검증
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("해당 username의 사용자가 없습니다.")
+        );
+
+        // password 검증
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
     }
 }
