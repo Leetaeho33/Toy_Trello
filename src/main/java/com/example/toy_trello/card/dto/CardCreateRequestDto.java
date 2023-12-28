@@ -1,5 +1,8 @@
 package com.example.toy_trello.card.dto;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +12,11 @@ public class CardCreateRequestDto {
   private String cardName;
   private String cardDescription;
   private String cardColor;
- // private UserState userState;
+  private String dueDate;
 
+  // 문자열로 받은 날짜를 Date 객체로 변환
+  public Date getDueDate() throws ParseException {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    return dateFormat.parse(this.dueDate);
+  }
 }
