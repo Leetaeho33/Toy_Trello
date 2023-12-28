@@ -1,5 +1,6 @@
 package com.example.toy_trello.domain.user;
 
+import com.example.toy_trello.domain.user.dto.UpdatePasswordRequestDto;
 import com.example.toy_trello.domain.user.dto.UserLoginRequestDto;
 import com.example.toy_trello.domain.user.dto.UserProfileRequestDto;
 import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
@@ -46,5 +47,13 @@ public class UserController {
                                                                @Valid @RequestBody UserProfileRequestDto userProfileRequestDto,
                                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok().body(userService.updateUserProfile(userId, userProfileRequestDto, userDetails));
+    }
+
+    @PatchMapping("/{userId}/passwords")
+    public ResponseEntity<CommonResponseDto> updatePassword(@PathVariable Long userId,
+                                                            @Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.updatePassword(userId, updatePasswordRequestDto, userDetails);
+        return ResponseEntity.ok().body(new CommonResponseDto("비밀번호가 변경되었습니다.", HttpStatus.OK.value()));
     }
 }

@@ -1,11 +1,6 @@
 package com.example.toy_trello.domain.user;
 
-import ch.qos.logback.core.joran.conditional.IfAction;
-import com.example.toy_trello.domain.user.dto.UserLoginRequestDto;
-import com.example.toy_trello.domain.user.dto.UserProfileRequestDto;
-import com.example.toy_trello.domain.user.dto.UserProfileResponseDto;
-import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
-import com.example.toy_trello.global.dto.CommonResponseDto;
+import com.example.toy_trello.domain.user.dto.*;
 import com.example.toy_trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -85,5 +80,34 @@ public class UserService {
 
         User updatedUser = user.update(userProfileRequestDto);
         return new UserProfileResponseDto(updatedUser);
+    }
+
+    @Transactional
+    public void updatePassword(Long userId, UpdatePasswordRequestDto updatePasswordRequestDto, UserDetailsImpl userDetails) {
+        String password = updatePasswordRequestDto.getPassword();
+        String newPassword = passwordEncoder.encode(updatePasswordRequestDto.getNewPassword());
+
+        // 해당 id의 유저가 존재하는지 검증
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 id의 유저가 없습니다.")
+        );
+
+        // 본인 인증
+        if (!Objects.equals(user.getUserId(), userDetails.getUser().getUserId())) {
+            throw new IllegalArgumentException("본인만 정보 수정 및 탈퇴 가능합니다.");
+        }
+
+        // password 검증
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 비밀번호 확인이 새로운 비밀번호와 일치하는지 확인
+        if (!Objects.equals(updatePasswordRequestDto.getNewPassword(), updatePasswordRequestDto.getCheckNewPassword())) {
+            throw new IllegalArgumentException("새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+
+        User passwordUpdatedUser = user.updatePassword(newPassword);
+        userRepository.save(passwordUpdatedUser);
     }
 }
