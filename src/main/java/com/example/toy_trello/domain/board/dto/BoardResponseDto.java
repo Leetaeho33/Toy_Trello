@@ -1,6 +1,6 @@
-package com.example.toy_trello.board.dto;
+package com.example.toy_trello.domain.board.dto;
 
-import com.example.toy_trello.board.entity.Board;
+import com.example.toy_trello.domain.board.entity.Board;
 import lombok.Getter;
 
 @Getter

@@ -1,10 +1,7 @@
-package com.example.toy_trello.card.dto;
+package com.example.toy_trello.domain.card.dto;
 
-import com.example.toy_trello.card.entity.Card;
+import com.example.toy_trello.domain.card.entity.Card;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 
 
 @Getter
