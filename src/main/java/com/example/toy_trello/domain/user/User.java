@@ -1,5 +1,6 @@
 package com.example.toy_trello.domain.user;
 
+import com.example.toy_trello.domain.user.dto.UserProfileRequestDto;
 import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
 import com.example.toy_trello.domain.util.BaseEntity;
 import jakarta.persistence.*;
@@ -27,5 +28,11 @@ public class User extends BaseEntity {
         this.password = encodedPassword;
         this.intro = userRequestDto.getIntro();
         this.email = userRequestDto.getEmail();
+    }
+
+    public User update(UserProfileRequestDto userProfileRequestDto) {
+        this.intro = userProfileRequestDto.getIntro() == null ? this.getIntro() : userProfileRequestDto.getIntro();
+        this.email = userProfileRequestDto.getEmail() == null ? this.getEmail() : userProfileRequestDto.getEmail();
+        return this;
     }
 }

@@ -1,10 +1,16 @@
 package com.example.toy_trello.domain.user;
 
+import ch.qos.logback.core.joran.conditional.IfAction;
 import com.example.toy_trello.domain.user.dto.UserLoginRequestDto;
+import com.example.toy_trello.domain.user.dto.UserProfileRequestDto;
+import com.example.toy_trello.domain.user.dto.UserProfileResponseDto;
 import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
+import com.example.toy_trello.global.dto.CommonResponseDto;
+import com.example.toy_trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -63,5 +69,21 @@ public class UserService {
                 () -> new IllegalArgumentException("해당 id의 유저가 없습니다.")
         );
         return new UserProfileResponseDto(user);
+    }
+
+    @Transactional
+    public UserProfileResponseDto updateUserProfile(Long userId, UserProfileRequestDto userProfileRequestDto, UserDetailsImpl userDetails) {
+        // 해당 id의 유저가 존재하는지 검증
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 id의 유저가 없습니다.")
+        );
+
+        // 본인 인증
+        if (!Objects.equals(user.getUserId(), userDetails.getUser().getUserId())) {
+            throw new IllegalArgumentException("본인만 정보 수정 및 탈퇴 가능합니다.");
+        }
+
+        User updatedUser = user.update(userProfileRequestDto);
+        return new UserProfileResponseDto(updatedUser);
     }
 }

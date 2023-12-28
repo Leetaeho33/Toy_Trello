@@ -1,14 +1,17 @@
 package com.example.toy_trello.domain.user;
 
 import com.example.toy_trello.domain.user.dto.UserLoginRequestDto;
+import com.example.toy_trello.domain.user.dto.UserProfileRequestDto;
 import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import com.example.toy_trello.global.jwt.JwtUtil;
+import com.example.toy_trello.global.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,5 +39,12 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<CommonResponseDto> getUserProfile(@PathVariable Long userId) {
         return ResponseEntity.ok().body(userService.getUserProfile(userId));
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<CommonResponseDto> updateUserProfile(@PathVariable Long userId,
+                                                               @Valid @RequestBody UserProfileRequestDto userProfileRequestDto,
+                                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok().body(userService.updateUserProfile(userId, userProfileRequestDto, userDetails));
     }
 }
