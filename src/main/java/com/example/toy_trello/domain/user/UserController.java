@@ -1,9 +1,6 @@
 package com.example.toy_trello.domain.user;
 
-import com.example.toy_trello.domain.user.dto.UpdatePasswordRequestDto;
-import com.example.toy_trello.domain.user.dto.UserLoginRequestDto;
-import com.example.toy_trello.domain.user.dto.UserProfileRequestDto;
-import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
+import com.example.toy_trello.domain.user.dto.*;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import com.example.toy_trello.global.jwt.JwtUtil;
 import com.example.toy_trello.global.security.UserDetailsImpl;
@@ -55,5 +52,13 @@ public class UserController {
                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.updatePassword(userId, updatePasswordRequestDto, userDetails);
         return ResponseEntity.ok().body(new CommonResponseDto("비밀번호가 변경되었습니다.", HttpStatus.OK.value()));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<CommonResponseDto> deleteUser(@PathVariable Long userId,
+                                                        @RequestBody DeleteUserRequestDto deleteUserRequestDto,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.deleteUser(userId, deleteUserRequestDto, userDetails);
+        return ResponseEntity.ok().body(new CommonResponseDto("회원 탈퇴에 성공하였습니다.", HttpStatus.OK.value()));
     }
 }

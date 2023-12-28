@@ -110,4 +110,25 @@ public class UserService {
         User passwordUpdatedUser = user.updatePassword(newPassword);
         userRepository.save(passwordUpdatedUser);
     }
+
+    public void deleteUser(Long userId, DeleteUserRequestDto deleteUserRequestDto, UserDetailsImpl userDetails) {
+        String password = deleteUserRequestDto.getPassword();
+
+        // 해당 id의 유저가 존재하는지 검증
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 id의 유저가 없습니다.")
+        );
+
+        // 본인 인증
+        if (!Objects.equals(user.getUserId(), userDetails.getUser().getUserId())) {
+            throw new IllegalArgumentException("본인만 정보 수정 및 탈퇴 가능합니다.");
+        }
+
+        // password 검증
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        userRepository.delete(user);
+    }
 }
