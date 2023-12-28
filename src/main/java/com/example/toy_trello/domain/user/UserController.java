@@ -9,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -34,5 +31,10 @@ public class UserController {
         userService.login(userLoginRequestDto);
         httpServletResponse.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(userLoginRequestDto.getUsername()));
         return ResponseEntity.ok().body(new CommonResponseDto("로그인이 완료되었습니다.", HttpStatus.OK.value()));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<CommonResponseDto> getUserProfile(@PathVariable Long userId) {
+        return ResponseEntity.ok().body(userService.getUserProfile(userId));
     }
 }

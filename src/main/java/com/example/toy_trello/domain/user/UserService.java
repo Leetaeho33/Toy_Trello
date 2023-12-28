@@ -2,7 +2,6 @@ package com.example.toy_trello.domain.user;
 
 import com.example.toy_trello.domain.user.dto.UserLoginRequestDto;
 import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,5 +55,13 @@ public class UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+    }
+
+    public UserProfileResponseDto getUserProfile(Long userId) {
+        // 해당 id의 유저가 존재하는지 검증
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 id의 유저가 없습니다.")
+        );
+        return new UserProfileResponseDto(user);
     }
 }
