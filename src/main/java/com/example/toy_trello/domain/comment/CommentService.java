@@ -106,7 +106,7 @@ public class CommentService {
     public PageDto getCommentsPage(Long cardId, int currentPage) {
         Pageable pageable = PageRequest.of(currentPage,5);
         int pageSize = pageable.getPageSize();
-        if(currentPage<=pageSize-1){
+        if(currentPage<pageSize-1){
             Page<Comment> result = commentRepository.findByCard_CardId(cardId, pageable);
             var data = result.getContent().stream()
                     .map(CommentResponseDto::new)
