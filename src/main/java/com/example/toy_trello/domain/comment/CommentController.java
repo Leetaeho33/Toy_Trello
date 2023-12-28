@@ -2,9 +2,11 @@ package com.example.toy_trello.domain.comment;
 
 import com.example.toy_trello.domain.comment.dto.CommentRequestDto;
 import com.example.toy_trello.domain.comment.dto.CommentResponseDto;
+import com.example.toy_trello.domain.comment.dto.PageDto;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import com.example.toy_trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.HashPrintJobAttributeSet;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -41,4 +44,15 @@ public class CommentController {
        return ResponseEntity.status(HttpStatus.OK).
                body(new CommonResponseDto("댓글이 삭제되었습니다.", HttpStatus.OK.value()));
    }
+    @GetMapping("/card/{cardId}")
+    public ResponseEntity<?> getComments(@PathVariable Long cardId) {
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(cardId));
+    }
+
+    @GetMapping("/card/{cardId}/page/{currentPage}")
+    public ResponseEntity<?> getCommentsPage(@PathVariable Long cardId,
+                                             @PathVariable int currentPage){
+       return ResponseEntity.status(HttpStatus.OK).
+               body(commentService.getCommentsPage(cardId, currentPage));
+    }
 }

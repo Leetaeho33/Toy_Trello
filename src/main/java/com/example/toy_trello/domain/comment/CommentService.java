@@ -4,12 +4,16 @@ import com.example.toy_trello.card.entity.Card;
 import com.example.toy_trello.card.repository.CardRepository;
 import com.example.toy_trello.domain.comment.dto.CommentRequestDto;
 import com.example.toy_trello.domain.comment.dto.CommentResponseDto;
+import com.example.toy_trello.domain.comment.dto.PageDto;
 import com.example.toy_trello.domain.comment.entity.Comment;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 //import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,5 +85,41 @@ public class CommentService {
         if(comment.getUser().getUsername().equals(user.getUsername())){
             return true;
         }else throw new IllegalArgumentException("작성자만 접근할 수 있습니다.");
+    }
+
+    public PageDto getComments(Long cardId) {
+        Pageable pageable = PageRequest.of(0,5);
+        Page<Comment> result = commentRepository.findByCard_CardId(cardId, pageable);
+        var data = result.getContent().stream()
+                .map(CommentResponseDto::new)
+                .toList();
+
+        return new PageDto(data,
+                result.getTotalElements(),
+                result.getTotalPages(),
+                pageable.getPageNumber(),
+                data.size()
+        );
+
+    }
+
+    public PageDto getCommentsPage(Long cardId, int currentPage) {
+        Pageable pageable = PageRequest.of(currentPage,5);
+        int pageSize = pageable.getPageSize();
+        if(currentPage<=pageSize-1){
+            Page<Comment> result = commentRepository.findByCard_CardId(cardId, pageable);
+            var data = result.getContent().stream()
+                    .map(CommentResponseDto::new)
+                    .toList();
+
+            return new PageDto(data,
+                    result.getTotalElements(),
+                    result.getTotalPages(),
+                    pageable.getPageNumber(),
+                    data.size()
+            );
+        }else{
+            throw new IllegalArgumentException("페이지 범위 밖입니다.");
+        }
     }
 }

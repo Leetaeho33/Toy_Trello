@@ -12,12 +12,14 @@ import java.time.LocalDateTime;
 public class CommentResponseDto {
     Long id;
     String content;
+    String Author;
     LocalDateTime createdAt;
     LocalDateTime modifiedAt;
 
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
         this.content = comment.getContent();
+        this.Author = comment.getUser().getUsername();
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
     }
