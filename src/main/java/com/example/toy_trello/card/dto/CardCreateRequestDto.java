@@ -1,6 +1,5 @@
 package com.example.toy_trello.card.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
