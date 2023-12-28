@@ -1,5 +1,6 @@
-package com.example.toy_trello.domain.user;
+package com.example.toy_trello.domain.user.dto;
 
+import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import lombok.Getter;
 
