@@ -30,7 +30,7 @@ public class CardController {
 
   private final CardService cardService;
   @GetMapping("/{cardId}")
-  public CardResponseDto getPost(@PathVariable Long cardId) {
+  public CardResponseDto getCard(@PathVariable Long cardId) {
     return cardService.getCard(cardId);
   }
 
@@ -41,7 +41,7 @@ public class CardController {
 //  }
 
   @PostMapping
-  public CardResponseDto createPost(@RequestBody CardCreateRequestDto postRequestDto)
+  public CardResponseDto createCard(@RequestBody CardCreateRequestDto postRequestDto)
       throws ParseException {
     return cardService.createCard(postRequestDto);
   }
@@ -55,6 +55,11 @@ public class CardController {
   @DeleteMapping("/{cardId}")
   public ResponseEntity<?> deleteCard(@PathVariable Long cardId) {
     return cardService.deleteCard(cardId);
+  }
+
+  @PutMapping("/{cardId}/{userId}")
+  public ResponseEntity<?> updateWorkerTransferCard(@PathVariable Long cardId, @PathVariable Long userId){
+    return cardService.updateWorkerTransferCard(cardId, userId);
   }
 
 //  @PatchMapping("/{cardId}")
