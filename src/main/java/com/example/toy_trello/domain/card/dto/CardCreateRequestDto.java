@@ -1,4 +1,4 @@
-package com.example.toy_trello.card.dto;
+package com.example.toy_trello.domain.card.dto;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
