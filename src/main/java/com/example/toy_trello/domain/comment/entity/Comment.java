@@ -1,5 +1,7 @@
 package com.example.toy_trello.domain.comment.entity;
 
+
+import com.example.toy_trello.domain.card.entity.Card;
 import com.example.toy_trello.card.entity.Card;
 import com.example.toy_trello.domain.comment.dto.CommentRequestDto;
 import com.example.toy_trello.domain.user.User;
@@ -7,8 +9,6 @@ import com.example.toy_trello.domain.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.awt.*;
 
 @Entity
 @Table(name = "comment")
@@ -22,6 +22,7 @@ public class Comment extends BaseEntity {
     @Column
     private String content;
 
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
@@ -31,6 +32,7 @@ public class Comment extends BaseEntity {
     Card card;
 
     public Comment(CommentRequestDto commentRequestDto, Card card, User user){
+
         this.content = commentRequestDto.getContent();
         this.card = card;
         this.user = user;
