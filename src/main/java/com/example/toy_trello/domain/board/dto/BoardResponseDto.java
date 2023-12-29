@@ -1,7 +1,9 @@
 package com.example.toy_trello.domain.board.dto;
 
 import com.example.toy_trello.domain.board.entity.Board;
+
 import java.time.LocalDateTime;
+
 import lombok.Getter;
 
 @Getter

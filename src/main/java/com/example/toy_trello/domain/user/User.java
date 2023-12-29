@@ -35,4 +35,15 @@ public class User extends BaseEntity {
         this.intro = userRequestDto.getIntro();
         this.email = userRequestDto.getEmail();
     }
+
+    public User update(UserProfileRequestDto userProfileRequestDto) {
+        this.intro = userProfileRequestDto.getIntro() == null ? this.getIntro() : userProfileRequestDto.getIntro();
+        this.email = userProfileRequestDto.getEmail() == null ? this.getEmail() : userProfileRequestDto.getEmail();
+        return this;
+    }
+
+    public User updatePassword(String newPassword) {
+        this.password = newPassword;
+        return this;
+    }
 }

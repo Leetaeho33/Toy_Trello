@@ -40,8 +40,6 @@ public class CardService {
 //    );
  // }
 
-
-
   public ResponseEntity<?> updateCard(Long cardId, CardUpdateRequestDto cardUpdateRequestDto) {
     Card card = cardRepository.findById(cardId)
         .orElseThrow(() -> new IllegalArgumentException("선택한 게시글은 존재하지 않습니다."));

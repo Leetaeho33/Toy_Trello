@@ -28,6 +28,7 @@ public class BoardController {
   private final BoardService boardService;
 
   @PostMapping
+
   public ResponseEntity<CommonResponseDto> createBoard(@RequestBody BoardCreateRequestDto boardCreateRequestDto,
                                                        @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
 
@@ -52,6 +53,7 @@ public class BoardController {
   // 선택 조회
   @GetMapping("/{boardId}")
   public BoardResponseDto getBoard(@PathVariable Long boardId) {
+
     return boardService.getBoard(boardId);
 
   }
@@ -61,6 +63,7 @@ public class BoardController {
                                                        @RequestBody BoardUpdateRequestDto boardUpdateRequestDto,
                                                        @AuthenticationPrincipal UserDetailsImpl userDetailsImpl){
       boardService.updateBoard(boardId, boardUpdateRequestDto, userDetailsImpl);
+
     return ResponseEntity.ok().body(new CommonResponseDto("수정 되었습니다.", HttpStatus.OK.value()));
   }
 
@@ -88,4 +91,5 @@ public class BoardController {
     boardService.deleteUserToBoard(boardId, userId);
     return ResponseEntity.ok().body(new CommonResponseDto("보드에서 삭제되었습니다.", HttpStatus.OK.value()));
   }*/
+
 }
