@@ -1,9 +1,9 @@
-package com.example.toy_trello.board.dto;
+package com.example.toy_trello.domain.board.dto;
 
 import lombok.Getter;
 
 @Getter
-public class BoardCreateRequestDto {
+public class BoardUpdateRequestDto {
   private String boardName;
   private String description;
   private String backgroundColor;
