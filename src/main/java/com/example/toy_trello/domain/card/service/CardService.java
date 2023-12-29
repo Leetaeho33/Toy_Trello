@@ -6,10 +6,12 @@ import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
 import com.example.toy_trello.domain.card.entity.Card;
 import com.example.toy_trello.domain.card.repository.CardRepository;
 
+
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
 import com.example.toy_trello.global.security.UserDetailsImpl;
 import java.text.ParseException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -71,6 +73,7 @@ public class CardService {
       //카드에 저장된 아이디와 현재 저장된 유저와 id 일치 여부 확인
     }
 
+
     User userUpdated = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("선택한 유저는 존재하지 않습니다."));
 
@@ -79,6 +82,7 @@ public class CardService {
 
     return ResponseEntity.ok().body("작업자가 변경되었습니다!");
   }
+
 
   public ResponseEntity<?> updateCard(Long cardId, CardUpdateRequestDto cardUpdateRequestDto) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
