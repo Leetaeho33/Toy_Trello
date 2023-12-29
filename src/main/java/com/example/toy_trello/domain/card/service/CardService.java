@@ -5,6 +5,7 @@ import com.example.toy_trello.domain.card.dto.CardResponseDto;
 import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
 import com.example.toy_trello.domain.card.entity.Card;
 import com.example.toy_trello.domain.card.repository.CardRepository;
+
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
 import com.example.toy_trello.global.security.UserDetailsImpl;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
 
 @Slf4j(topic = "CardService")
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 public class CardService {
 
   private final CardRepository cardRepository;
+
   private final UserRepository userRepository;
   public CardResponseDto createCard(CardCreateRequestDto requestDto) throws ParseException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -32,6 +35,7 @@ public class CardService {
         .cardDescription(requestDto.getCardDescription())
         .user(userDetails.getUser())
         .dueDate(requestDto.getDueDate())
+
         .cardColor(requestDto.getCardColor())
         .build();
     Card cardSaved = cardRepository.save(card);
@@ -92,6 +96,7 @@ public class CardService {
       //카드에 저장된 아이디와 현재 저장된 유저와 id 일치 여부 확인
     }
 
+
     card.update(cardUpdateRequestDto);
     cardRepository.save(card);
     return ResponseEntity.ok().body("업데이트를 성공하였습니다.");
@@ -115,7 +120,5 @@ public class CardService {
 //    Card card = cardRepository.findById(cardId).orElseThrow(()->new IllegalArgumentException("선택한 카드는 존재하지 않습니다."));
 //    List<ColumnEntity> result = commentRepository.findByPostId(postId, pageable);
 //  }
-
-
 
 }

@@ -1,16 +1,13 @@
-package com.example.toy_trello.board.service;
+package com.example.toy_trello.domain.board.service;
 
-import com.example.toy_trello.board.dto.BoardCreateRequestDto;
-import com.example.toy_trello.board.dto.BoardResponseDto;
-import com.example.toy_trello.board.entity.Board;
-import com.example.toy_trello.board.repository.BoardRepository;
-import java.util.List;
+import com.example.toy_trello.domain.board.dto.BoardCreateRequestDto;
+import com.example.toy_trello.domain.board.dto.BoardResponseDto;
+import com.example.toy_trello.domain.board.entity.Board;
+import com.example.toy_trello.domain.board.repository.BoardRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service

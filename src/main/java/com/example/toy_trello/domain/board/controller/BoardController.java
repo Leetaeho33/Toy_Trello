@@ -1,11 +1,10 @@
-package com.example.toy_trello.board.controller;
+package com.example.toy_trello.domain.board.controller;
 
-import com.example.toy_trello.board.dto.BoardCreateRequestDto;
-import com.example.toy_trello.board.dto.BoardResponseDto;
-import com.example.toy_trello.board.entity.Board;
-import com.example.toy_trello.board.service.BoardService;
+import com.example.toy_trello.domain.board.dto.BoardCreateRequestDto;
+import com.example.toy_trello.domain.board.dto.BoardResponseDto;
+import com.example.toy_trello.domain.board.entity.Board;
+import com.example.toy_trello.domain.board.service.BoardService;
 import com.example.toy_trello.global.dto.CommonResponseDto;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

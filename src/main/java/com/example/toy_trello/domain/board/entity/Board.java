@@ -1,6 +1,6 @@
-package com.example.toy_trello.board.entity;
+package com.example.toy_trello.domain.board.entity;
 
-import com.example.toy_trello.board.dto.BoardCreateRequestDto;
+import com.example.toy_trello.domain.board.dto.BoardCreateRequestDto;
 import com.example.toy_trello.domain.util.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -4,7 +4,9 @@ import com.example.toy_trello.domain.card.dto.CardCreateRequestDto;
 import com.example.toy_trello.domain.card.dto.CardResponseDto;
 import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
 import com.example.toy_trello.domain.card.service.CardService;
+
 import java.text.ParseException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +27,9 @@ public class CardController {
 
   private final CardService cardService;
   @GetMapping("/{cardId}")
+
   public CardResponseDto getCard(@PathVariable Long cardId) {
+
     return cardService.getCard(cardId);
   }
 
@@ -36,8 +40,10 @@ public class CardController {
 //  }
 
   @PostMapping
+
   public CardResponseDto createCard(@RequestBody CardCreateRequestDto postRequestDto)
       throws ParseException {
+
     return cardService.createCard(postRequestDto);
   }
 
@@ -52,6 +58,7 @@ public class CardController {
     return cardService.deleteCard(cardId);
   }
 
+
   @PutMapping("/{cardId}/{userId}")
   public ResponseEntity<?> updateWorkerTransferCard(@PathVariable Long cardId, @PathVariable Long userId){
     return cardService.updateWorkerTransferCard(cardId, userId);
@@ -61,4 +68,5 @@ public class CardController {
 //  public ResponseEntity<?> transferCard(@PathVariable Long cardId){
 //
 //  }
+
 }
