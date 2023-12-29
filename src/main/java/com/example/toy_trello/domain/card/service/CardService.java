@@ -1,17 +1,13 @@
-package com.example.toy_trello.card.service;
+package com.example.toy_trello.domain.card.service;
 
-import com.example.toy_trello.card.dto.CardCreateRequestDto;
-import com.example.toy_trello.card.dto.CardResponseDto;
-import com.example.toy_trello.card.dto.CardTransferResponseDto;
-import com.example.toy_trello.card.dto.CardUpdateRequestDto;
-import com.example.toy_trello.card.dto.PageDto;
-import com.example.toy_trello.card.entity.Card;
-import com.example.toy_trello.card.repository.CardRepository;
-import java.util.List;
+import com.example.toy_trello.domain.card.dto.CardCreateRequestDto;
+import com.example.toy_trello.domain.card.dto.CardResponseDto;
+import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
+import com.example.toy_trello.domain.card.entity.Card;
+import com.example.toy_trello.domain.card.repository.CardRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

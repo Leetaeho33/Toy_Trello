@@ -1,4 +1,4 @@
-package com.example.toy_trello.board.dto;
+package com.example.toy_trello.domain.board.dto;
 
 import lombok.Getter;
 
