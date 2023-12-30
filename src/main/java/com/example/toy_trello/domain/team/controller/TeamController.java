@@ -6,6 +6,7 @@ import com.example.toy_trello.domain.team.dto.TeamCreateResponseDto;
 import com.example.toy_trello.domain.team.dto.TeamMemberRequestDto;
 import com.example.toy_trello.domain.team.dto.TeamResponseDto;
 import com.example.toy_trello.domain.team.service.TeamService;
+import com.example.toy_trello.global.dto.CommonResponseDto;
 import com.example.toy_trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -56,9 +57,17 @@ public class TeamController {
 
     @DeleteMapping("leave/team/{teamId}")
     public ResponseEntity<?> leaveTeam(@PathVariable Long teamId,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails){
+                                       @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.status(HttpStatus.OK).
                 body(teamService.leaveTeam(teamId, userDetails.getUser()));
+    }
+
+    @DeleteMapping("/delete/team/{teamId}")
+    public ResponseEntity<CommonResponseDto> deleteTeam(@PathVariable Long teamId,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
+        teamService.deleteTeam(teamId, userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.OK).
+                body(new CommonResponseDto("팀이 삭제 되었습니다.", HttpStatus.OK.value()));
     }
 
 }

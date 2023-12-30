@@ -96,10 +96,12 @@ public class TeamService {
 
     @Transactional
     public TeamResponseDto changeRole(Long teamId, Long memberId, User currentLeader) {
+        log.info("팀 역할 변경");
         Team team = findTeamById(teamId);
         Member currentLeaderMember = findMemberByUser(teamId, currentLeader);
         Member newLeader = findByMemberId(memberId);
         swapRole(newLeader, currentLeaderMember, teamId);
+        log.info("팀 역할 변경 완료");
         return new TeamResponseDto(team.getTeamName(), team.getDescription(), transEntityToDtoList(team));
     }
 
@@ -129,6 +131,13 @@ public class TeamService {
         return new TeamResponseDto(team.getTeamName(), team.getDescription(), transEntityToDtoList(team));
     }
 
+    public void deleteTeam(Long teamId, User user) {
+        log.info("팀 삭제");
+        Team team = findTeamById(teamId);
+        if(checkLeaderAuthorization(teamId, user)){
+            teamRepository.delete(team);
+        }
+    }
 
     // 팀 이름 중복 체크 메소드(중복이면 예외 던짐, 중복이 아니면 true 리턴)
     public boolean checkDuplicatedTeamName(String teamName){
@@ -275,5 +284,4 @@ public class TeamService {
             return null;
         }
     }
-
 }
