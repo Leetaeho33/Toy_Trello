@@ -84,12 +84,4 @@ public class BoardController {
     return ResponseEntity.ok().body(new CommonResponseDto("보드에 추가되었습니다.", HttpStatus.OK.value()));
   }
 
-  // 보드에 사용자 삭제하는 메서드
- /* @DeleteMapping("/{boardId}/users/{userId}")
-  public ResponseEntity<CommonResponseDto> deleteUserToBoard(@PathVariable Long boardId,
-                                                             @PathVariable Long userId) {
-    boardService.deleteUserToBoard(boardId, userId);
-    return ResponseEntity.ok().body(new CommonResponseDto("보드에서 삭제되었습니다.", HttpStatus.OK.value()));
-  }*/
-
 }
