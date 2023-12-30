@@ -51,6 +51,8 @@ public class TeamService {
         return new TeamCreateResponseDto(teamName, description, board.getBoardName(), member);
     }
 
+    // 팀장만 팀원 초대 가능
+    // 한팀에 팀장은 한명
     public TeamResponseDto inviteMember(TeamMemberRequestDto teamMemberRequestDto,
                                         Long teamId, User user) {
         log.info("멤버 초대");
@@ -74,6 +76,7 @@ public class TeamService {
                 team.getDescription(), transEntityToDtoList(team));
     }
 
+    // 팀장만 팀원 추방 가능
     public TeamResponseDto exileMember(Long teamId, Long memberId, User user) {
         log.info("멤버 추방");
         Team team = findTeamById(teamId);
