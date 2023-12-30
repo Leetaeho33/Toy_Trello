@@ -11,13 +11,13 @@ public class TeamCreateResponseDto {
     String teamName;
     String description;
     String BoardName;
-    String creator;
+    String teamLeader;
 
 
     public TeamCreateResponseDto(String teamName, String description, String boardName, Member member) {
         this.teamName = teamName;
         this.description = description;
         this.BoardName = boardName;
-        this.creator = member.getUser().getUsername();
+        this.teamLeader = member.getUser().getUsername();
     }
 }

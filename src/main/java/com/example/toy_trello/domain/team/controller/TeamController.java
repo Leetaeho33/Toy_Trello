@@ -8,6 +8,7 @@ import com.example.toy_trello.domain.team.dto.TeamResponseDto;
 import com.example.toy_trello.domain.team.service.TeamService;
 import com.example.toy_trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,4 +53,17 @@ public class TeamController {
                 body(teamService.changeRole(teamId, memberId, userDetails.getUser()));
     }
 
+    @DeleteMapping("leave/team/{teamId}")
+    public ResponseEntity<TeamResponseDto> leaveTeam(@PathVariable Long teamId,
+                                                     @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.status(HttpStatus.OK).
+                body(teamService.leaveTeam(teamId, userDetails.getUser()));
+    }
+
+    @PutMapping("leader/team/{teamId}/member/{memberId}")
+    public ResponseEntity<TeamResponseDto> setLeader(@PathVariable Long teamId,
+                                                     @PathVariable Long memberId){
+        return ResponseEntity.status(HttpStatus.OK).
+                body(teamService.setLeader(teamId, memberId));
+    }
 }

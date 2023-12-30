@@ -59,26 +59,20 @@ public class TeamService {
     }
 
     // 팀장만 팀원 초대 가능
-    // 한팀에 팀장은 한명
     public TeamResponseDto inviteMember(TeamMemberRequestDto teamMemberRequestDto,
                                         Long teamId, User user) {
         log.info("멤버 초대");
         User requestMember = findUserById(teamMemberRequestDto.getUsername());
-        String role = teamMemberRequestDto.getRole();
-        Member member = new Member(role, requestMember);
+        Member member = new Member("teamMember", requestMember);
         Team team = findTeamById(teamId);
-        //팀장이 중복인지?
-        if(checkDuplicatedLeader(teamId, teamMemberRequestDto.getRole())){
-            //한팀에 중복된 멤버가 있는지
-            if(checkDuplicatedMember(teamId, requestMember)){
+        //한팀에 중복된 멤버가 있는지
+        if(checkDuplicatedMember(teamId, requestMember)){
                 //팀원을 초대할 권한이 있는지
-                if(checkLeaderAuthorization(teamId, user)){
-                    member.setTeam(team);
-                    memberRepository.save(member);
-                }
+            if(checkLeaderAuthorization(teamId, user)){
+                member.setTeam(team);
+                memberRepository.save(member);
             }
         }
-
         return new TeamResponseDto(team.getTeamName(),
                 team.getDescription(), transEntityToDtoList(team));
     }
@@ -94,21 +88,41 @@ public class TeamService {
         return new TeamResponseDto(team.getTeamName(), team.getDescription(), transEntityToDtoList(team));
     }
 
-
     @Transactional
     public TeamResponseDto changeRole(Long teamId, Long memberId, User currentLeader) {
-        log.info("팀장 변경");
         Team team = findTeamById(teamId);
-        Member member = findByMemberId(memberId);
         Member currentLeaderMember = findMemberByUser(teamId, currentLeader);
-        if(checkLeaderAuthorization(teamId, currentLeader)){
-            currentLeaderMember.updateRole("teamMember");
-            member.updateRole("leader");
-        }
+        Member newLeader = findByMemberId(memberId);
+        swapRole(newLeader, currentLeaderMember, teamId);
         return new TeamResponseDto(team.getTeamName(), team.getDescription(), transEntityToDtoList(team));
     }
 
-    // 중복 체크 메소드(중복이면 예외 던짐, 중복이 아니면 true 리턴)
+    public TeamResponseDto leaveTeam(Long teamId, User user) {
+        log.info("팀 탈퇴");
+        Team team = findTeamById(teamId);
+        Member member = findMemberByUser(teamId, user);
+        log.info("팀 id는 "+ team.getId());
+        log.info("멤버 이름은 " + member.getUser().getUsername());
+        log.info("멤버 id는 " + member.getId());
+        memberRepository.delete(member);
+            if(!checkLeaderExist(teamId)){
+                log.info("팀장이 팀 탈퇴시");
+                Member newLeader = findNewLeader(teamId);
+                // 업데이트를 할 때 transaction을 걸면 좋은데 여기선 delete와 함께 있어서 transaction을 못검..
+                // 이거 잘 하면 transaction걸고 할 수 있을 것 같은데 모르겠습니다 ㅠ
+                newLeader.updateRole("leader");
+                memberRepository.save(newLeader);
+            }else memberRepository.delete(member);
+        log.info("팀 탈퇴 완료");
+        return new TeamResponseDto(team.getTeamName(), team.getDescription(), transEntityToDtoList(team));
+    }
+
+    public TeamResponseDto setLeader(Long teamId, Long memberId) {
+        Team team = findTeamById(teamId);
+        return null;
+    }
+
+    // 팀 이름 중복 체크 메소드(중복이면 예외 던짐, 중복이 아니면 true 리턴)
     public boolean checkDuplicatedTeamName(String teamName){
         log.info("팀 중복 체크");
         Optional<Team> team = teamRepository.findByTeamName(teamName);
@@ -166,21 +180,16 @@ public class TeamService {
         }
     }
 
-    public boolean checkDuplicatedLeader(Long teamId, String role){
-        log.info("팀장은 팀당 한명뿐.");
-        Optional<Team> optionalTeam = teamRepository.findById(teamId);
-        List<Member> members;
-        if(optionalTeam.isPresent()){
-            Team team = optionalTeam.get();
-            members = team.getMembers();
-            for(Member member : members){
-                if(member.getRole().equals("leader") && role.equals("leader")){
-                    log.error("한 팀에 팀장은 한명뿐입니다!");
-                    throw new DuplicatedLeaderException(DUPLICATED_LEADER);
-                }
+    public boolean checkLeaderExist(Long teamId){
+        log.info("팀장 유무 체크");
+        Team team = findTeamById(teamId);
+        List<Member> members = team.getMembers();
+        for(Member member : members){
+            if(member.getRole().equals("leader")){
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public boolean checkDuplicatedMember(Long teamId, User user){
@@ -240,4 +249,23 @@ public class TeamService {
             throw new UnAuthorizationException(ONLY_AUTHORIZED_LEADER);
         }
     }
+    public void swapRole(Member newLeader, Member currentLeader, Long teamId){
+        log.info("팀장 변경");
+        if(checkLeaderAuthorization(teamId, currentLeader.getUser())){
+            currentLeader.updateRole("teamMember");
+            newLeader.updateRole("leader");
+        }
+        log.info("팀장 변경 완료");
+    }
+
+    public Member findNewLeader(Long teamId){
+        Optional<Member> member = memberRepository.findFirstByTeamId(teamId);
+        if(member.isPresent()){
+            return member.get();
+        }else {
+            log.error("멤버가 한명도 존재하지 않습니다.");
+            return null;
+        }
+    }
+
 }
