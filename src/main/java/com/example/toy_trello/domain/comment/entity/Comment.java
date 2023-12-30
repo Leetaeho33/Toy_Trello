@@ -2,7 +2,7 @@ package com.example.toy_trello.domain.comment.entity;
 
 
 import com.example.toy_trello.domain.card.entity.Card;
-import com.example.toy_trello.card.entity.Card;
+import com.example.toy_trello.domain.card.entity.Card;
 import com.example.toy_trello.domain.comment.dto.CommentRequestDto;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.util.BaseEntity;

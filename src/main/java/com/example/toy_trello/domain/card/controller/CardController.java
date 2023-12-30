@@ -3,15 +3,16 @@ package com.example.toy_trello.domain.card.controller;
 import com.example.toy_trello.domain.card.dto.CardCreateRequestDto;
 import com.example.toy_trello.domain.card.dto.CardResponseDto;
 import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
+import com.example.toy_trello.domain.card.dto.PageDto;
 import com.example.toy_trello.domain.card.service.CardService;
 import java.text.ParseException;
-
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,30 +27,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class CardController {
 
   private final CardService cardService;
-  @GetMapping("/{cardId}")
 
-  public CardResponseDto getCard(@PathVariable Long cardId) {
-
-    return cardService.getCard(cardId);
-  }
-
-//  @GetMapping("/list")
-//  public ResponseEntity<Page<CardResponseDto>> getCards(Pageable pageable) {
-//    PageDto response = cardService.getCards(pageable);
-//    return ResponseEntity.ok(response);
-//  }
 
   @PostMapping
-
   public CardResponseDto createCard(@RequestBody CardCreateRequestDto postRequestDto)
       throws ParseException {
 
     return cardService.createCard(postRequestDto);
   }
+  @GetMapping("/{cardId}")
+  public CardResponseDto getCard(@PathVariable Long cardId) {
+
+    return cardService.getCard(cardId);
+  }
+
+  @GetMapping("/list/{columnId}")
+  public ResponseEntity<PageDto> getCards(Pageable pageable, @PathVariable Long columnId) {
+    PageDto response = cardService.getAllCards(pageable, columnId);
+    return ResponseEntity.ok(response);
+  }
+
+
 
   @PutMapping("/{cardId}")
-  public ResponseEntity<?> updateCard(@PathVariable Long cardId,
-      @RequestBody CardUpdateRequestDto postUpdateRequestDto) {
+  public ResponseEntity<?> updateCard(@PathVariable Long cardId, @RequestBody CardUpdateRequestDto postUpdateRequestDto) {
     return cardService.updateCard(cardId, postUpdateRequestDto);
   }
 
@@ -59,14 +60,19 @@ public class CardController {
   }
 
 
-  @PutMapping("/{cardId}/{userId}")
-  public ResponseEntity<?> updateWorkerTransferCard(@PathVariable Long cardId, @PathVariable Long userId){
+  @PutMapping("/card/{cardId}/user/{userId}")
+  public ResponseEntity<?> updateWorkerTransferCard(@PathVariable Long cardId,
+      @PathVariable Long userId) {
     return cardService.updateWorkerTransferCard(cardId, userId);
   }
 
-//  @PatchMapping("/{cardId}")
-//  public ResponseEntity<?> transferCard(@PathVariable Long cardId){
-//
-//  }
+  @PutMapping("/cards/{cardId}/columns/{targetColumnId}/order/{order}")
+  public ResponseEntity<?> moveCard(
+      @PathVariable Long cardId,
+      @PathVariable Long targetColumnId,
+      @PathVariable Long order) {
+    return cardService.moveCard(cardId,targetColumnId,order);
+  }
+
 
 }

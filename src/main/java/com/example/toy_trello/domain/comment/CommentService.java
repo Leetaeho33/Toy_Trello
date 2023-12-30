@@ -1,7 +1,7 @@
 package com.example.toy_trello.domain.comment;
 
-import com.example.toy_trello.card.entity.Card;
-import com.example.toy_trello.card.repository.CardRepository;
+import com.example.toy_trello.domain.card.entity.Card;
+import com.example.toy_trello.domain.card.repository.CardRepository;
 import com.example.toy_trello.domain.comment.dto.CommentRequestDto;
 import com.example.toy_trello.domain.comment.dto.CommentResponseDto;
 import com.example.toy_trello.domain.comment.dto.PageDto;
