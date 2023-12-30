@@ -35,4 +35,7 @@ public class Member extends BaseEntity {
     public void setTeam(Team team){
         this.team = team;
     }
+    public void updateRole(String role){
+        this.role = role;
+    }
 }

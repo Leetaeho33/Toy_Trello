@@ -84,16 +84,29 @@ public class TeamService {
     }
 
     // 팀장만 팀원 추방 가능
-    public TeamResponseDto exileMember(Long teamId, Long memberId, User user) {
+    public TeamResponseDto exileMember(Long teamId, Long memberId, User teamLeader) {
         log.info("멤버 추방");
         Team team = findTeamById(teamId);
         Member member = findByMemberId(memberId);
-        if(checkLeaderAuthorization(teamId, user)){
+        if(checkLeaderAuthorization(teamId, teamLeader)){
             memberRepository.delete(member);
         }
         return new TeamResponseDto(team.getTeamName(), team.getDescription(), transEntityToDtoList(team));
     }
 
+
+    @Transactional
+    public TeamResponseDto changeRole(Long teamId, Long memberId, User currentLeader) {
+        log.info("팀장 변경");
+        Team team = findTeamById(teamId);
+        Member member = findByMemberId(memberId);
+        Member currentLeaderMember = findMemberByUser(teamId, currentLeader);
+        if(checkLeaderAuthorization(teamId, currentLeader)){
+            currentLeaderMember.updateRole("teamMember");
+            member.updateRole("leader");
+        }
+        return new TeamResponseDto(team.getTeamName(), team.getDescription(), transEntityToDtoList(team));
+    }
 
     // 중복 체크 메소드(중복이면 예외 던짐, 중복이 아니면 true 리턴)
     public boolean checkDuplicatedTeamName(String teamName){
@@ -200,29 +213,31 @@ public class TeamService {
         return memberResponseDtos;
     }
 
-    //
-    public boolean checkLeaderAuthorization(Long teamId, User teamLeader){
-        log.info("팀 리더 권한 체크");
+    public Member findMemberByUser(Long teamId, User user) {
+        log.info("해당 유저가 팀의 어떤 멤버인지 찾기");
         List<Member> teamMember = memberRepository.findByTeam_Id(teamId);
         Member member = null;
-        for(Member m : teamMember){
-            if(m.getUser().getUserId().equals(teamLeader.getUserId())){
+        for (Member m : teamMember) {
+            if (m.getUser().getUserId().equals(user.getUserId())) {
                 member = m;
-                break;
+                return member;
             }
         }
-        // 초대하는 사람이 팀 멤버가 아니면 null -> 예외
-        if(member!=null) {
-            String role = member.getRole();
-            // 초대하는 사람의 권한 체크 : Leader만 초대 가능
-            if (member.getTeam().getId() == teamId && role.equals("leader")) {
-                log.info("팀장은 가능한 권한 있습니다.");
-                return true;
-            } else {
-                log.error("팀장만 초대할 수 있습니다.");
-                throw new UnAuthorizationException(ONLY_AUTHORIZED_LEADER);
-            }
-        }else throw new NotTeamMemberException(NOT_TEAM_MEMBER);
+        if(member==null) throw new NotTeamMemberException(NOT_TEAM_MEMBER);
+        return null;
     }
 
+    public boolean checkLeaderAuthorization(Long teamId, User teamLeader){
+        log.info("팀 리더 권한 체크");
+        Member member = findMemberByUser(teamId, teamLeader);
+        String role = member.getRole();
+        // 초대하는 사람의 권한 체크 : Leader만 초대 가능
+        if (member.getTeam().getId() == teamId && role.equals("leader")) {
+            log.info("팀장은 가능한 권한 입니다.");
+            return true;
+        } else {
+            log.error("팀장에게만 있는 권한입니다.");
+            throw new UnAuthorizationException(ONLY_AUTHORIZED_LEADER);
+        }
+    }
 }

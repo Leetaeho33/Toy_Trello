@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,6 +42,14 @@ public class TeamController {
                                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.status(HttpStatus.OK).
                 body(teamService.exileMember(teamId, memberId, userDetails.getUser()));
+    }
+
+    @PutMapping("/role/team/{teamId}/member/{memberId}")
+    public ResponseEntity<TeamResponseDto> changeRole(@PathVariable Long teamId,
+                                                      @PathVariable Long memberId,
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.status(HttpStatus.OK).
+                body(teamService.changeRole(teamId, memberId, userDetails.getUser()));
     }
 
 }
