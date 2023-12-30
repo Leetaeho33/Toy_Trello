@@ -6,6 +6,8 @@ import com.example.toy_trello.domain.comment.dto.CommentRequestDto;
 import com.example.toy_trello.domain.comment.dto.CommentResponseDto;
 import com.example.toy_trello.domain.comment.dto.PageDto;
 import com.example.toy_trello.domain.comment.entity.Comment;
+import com.example.toy_trello.domain.comment.exception.CommentErrorCode;
+import com.example.toy_trello.domain.comment.exception.CommentExistsException;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.toy_trello.domain.comment.exception.CommentErrorCode.NO_COMMENT;
 
 
 @RequiredArgsConstructor
@@ -71,7 +75,7 @@ public class CommentService {
     private Comment findCommentById(Long commentId){
         log.info("댓글 조회 시작");
         return commentRepository.findById(commentId).orElseThrow(()->
-                new IllegalArgumentException("해당 댓글은 존재하지 않습니다."));
+                new CommentExistsException(NO_COMMENT));
     }
 
     private Card findCardById(Long cardId){
@@ -84,7 +88,7 @@ public class CommentService {
         log.info("작성자 인가 확인");
         if(comment.getUser().getUsername().equals(user.getUsername())){
             return true;
-        }else throw new IllegalArgumentException("작성자만 접근할 수 있습니다.");
+        }else throw new CommentExistsException(CommentErrorCode.UNAUTHORIZED_USER);
     }
 
     public PageDto getComments(Long cardId) {

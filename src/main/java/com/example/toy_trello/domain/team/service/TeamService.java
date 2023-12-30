@@ -4,12 +4,15 @@ import com.example.toy_trello.domain.board.entity.Board;
 import com.example.toy_trello.domain.board.repository.BoardRepository;
 import com.example.toy_trello.domain.member.dto.MemberResponseDto;
 import com.example.toy_trello.domain.member.entity.Member;
+import com.example.toy_trello.domain.member.exception.MemberNotFoundException;
+import com.example.toy_trello.domain.member.exception.NotExistMemberException;
 import com.example.toy_trello.domain.member.repository.MemberRepository;
 import com.example.toy_trello.domain.team.dto.TeamCreateRequestDto;
 import com.example.toy_trello.domain.team.dto.TeamCreateResponseDto;
 import com.example.toy_trello.domain.team.dto.TeamMemberRequestDto;
 import com.example.toy_trello.domain.team.dto.TeamResponseDto;
 import com.example.toy_trello.domain.team.entity.Team;
+import com.example.toy_trello.domain.team.exception.*;
 import com.example.toy_trello.domain.team.repository.TeamRepository;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
@@ -21,6 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.toy_trello.domain.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import static com.example.toy_trello.domain.member.exception.MemberErrorCode.NOT_EXIST_MEMBER;
+import static com.example.toy_trello.domain.team.exception.TeamErrorCode.*;
 
 @Slf4j(topic ="TeamService")
 @Service
@@ -94,11 +101,12 @@ public class TeamService {
         Optional<Team> team = teamRepository.findByTeamName(teamName);
         if(team.isPresent()){
             log.error("이미 존재하는 팀입니다.");
-            throw new IllegalArgumentException("이미 존재하는 팀입니다.");
+            throw new DuplicatedTeamException(DUPLICATED_TEAM);
         }
         else return true;
     }
 
+    //Board 도메인의 예외 사용
     public Board findBoardById(Long boardId){
         log.info("보드 조회");
         Optional<Board> OptionalBoard = boardRepository.findById(boardId);
@@ -111,6 +119,7 @@ public class TeamService {
         }
     }
 
+    //User 도메인의 예외 사용
     public User findUserById(String username){
         log.info("유저 조회");
         Optional<User> optionalUser = userRepository.findByUsername(username);
@@ -129,7 +138,7 @@ public class TeamService {
             return optionalTeam.get();
         }else {
             log.error("팀이 존재하지 않습니다.");
-            throw new IllegalArgumentException("팀이 존재하지 않습니다.");
+            throw new TeamNotFoundException(TEAM_NOT_FOUND);
         }
     }
 
@@ -140,7 +149,7 @@ public class TeamService {
             return optionalMember.get();
         }else {
             log.error("멤버가 존재하지 않습니다.");
-            throw new IllegalArgumentException("멤버가 존재하지 않습니다.");
+            throw new MemberNotFoundException(MEMBER_NOT_FOUND);
         }
     }
 
@@ -154,7 +163,7 @@ public class TeamService {
             for(Member member : members){
                 if(member.getRole().equals("leader") && role.equals("leader")){
                     log.error("한 팀에 팀장은 한명뿐입니다!");
-                    throw new IllegalArgumentException("한 팀에 팀장은 한명뿐입니다!");
+                    throw new DuplicatedLeaderException(DUPLICATED_LEADER);
                 }
             }
         }
@@ -169,7 +178,7 @@ public class TeamService {
         for(Member member : members){
             if(member.getUser().getUserId().equals(user.getUserId())){
                 log.error("중복된 인원이 한팀에는 들어갈 수 없습니다.");
-                throw new IllegalArgumentException("중복된 인원이 한팀에는 들어갈 수 없습니다.");
+                throw new DuplicatedMemberException(DUPLICATED_MEMBER);
             }
         }
         return true;
@@ -184,6 +193,9 @@ public class TeamService {
                 MemberResponseDto memberResponseDto = new MemberResponseDto(member.getUser().getUsername(), member.getRole());
                 memberResponseDtos.add(memberResponseDto);
             }
+        }else {
+            log.error("멤버가 한명도 존재하지 않습니다.");
+            throw new NotExistMemberException(NOT_EXIST_MEMBER);
         }
         return memberResponseDtos;
     }
@@ -208,9 +220,9 @@ public class TeamService {
                 return true;
             } else {
                 log.error("팀장만 초대할 수 있습니다.");
-                throw new IllegalArgumentException("팀장만 접근 할 수 있습니다.");
+                throw new UnAuthorizationException(ONLY_AUTHORIZED_LEADER);
             }
-        }else throw new IllegalArgumentException("로그인된 유저는 이 팀의 멤버가 아닙니다.");
+        }else throw new NotTeamMemberException(NOT_TEAM_MEMBER);
     }
 
 }
