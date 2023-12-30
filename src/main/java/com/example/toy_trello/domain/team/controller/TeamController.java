@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/vi/teams")
+@RequestMapping("/api/v1/teams")
 public class TeamController {
     private final TeamService teamService;
 
@@ -29,13 +29,18 @@ public class TeamController {
                 body(teamService.createTeam(teamCreateRequestDto,userDetails.getUser(), boardId));
     }
 
-    @PutMapping("/{teamId}")
-    public ResponseEntity<TeamResponseDto> inviteMember
-                                                        (@RequestBody TeamMemberRequestDto teamMemberRequestDto,
+    @PutMapping("/invite/{teamId}")
+    public ResponseEntity<TeamResponseDto> inviteMember(@RequestBody TeamMemberRequestDto teamMemberRequestDto,
                                                         @PathVariable Long teamId,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.status(HttpStatus.OK).body(teamService.inviteMember(teamMemberRequestDto,
                                                         teamId, userDetails.getUser()));
+    }
+    @DeleteMapping("/exile/team/{teamId}/member/{memberId}")
+    public ResponseEntity<TeamResponseDto> exileMember(@PathVariable Long teamId, @PathVariable Long memberId,
+                                                       @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.status(HttpStatus.OK).
+                body(teamService.exileMember(teamId, memberId, userDetails.getUser()));
     }
 
 }

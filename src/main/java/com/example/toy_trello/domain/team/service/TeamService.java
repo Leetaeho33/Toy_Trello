@@ -50,6 +50,7 @@ public class TeamService {
         log.info("팀 생성 완료");
         return new TeamCreateResponseDto(teamName, description, board.getBoardName(), member);
     }
+
     public TeamResponseDto inviteMember(TeamMemberRequestDto teamMemberRequestDto,
                                         Long teamId, User user) {
         log.info("멤버 초대");
@@ -62,7 +63,7 @@ public class TeamService {
             //한팀에 중복된 멤버가 있는지
             if(checkDuplicatedMember(teamId, requestMember)){
                 //팀원을 초대할 권한이 있는지
-                if(checkInviteAuthorization(teamId, user)){
+                if(checkLeaderAuthorization(teamId, user)){
                     member.setTeam(team);
                     memberRepository.save(member);
                 }
@@ -72,6 +73,17 @@ public class TeamService {
         return new TeamResponseDto(team.getTeamName(),
                 team.getDescription(), transEntityToDtoList(team));
     }
+
+    public TeamResponseDto exileMember(Long teamId, Long memberId, User user) {
+        log.info("멤버 추방");
+        Team team = findTeamById(teamId);
+        Member member = findByMemberId(memberId);
+        if(checkLeaderAuthorization(teamId, user)){
+            memberRepository.delete(member);
+        }
+        return new TeamResponseDto(team.getTeamName(), team.getDescription(), transEntityToDtoList(team));
+    }
+
 
     // 중복 체크 메소드(중복이면 예외 던짐, 중복이 아니면 true 리턴)
     public boolean checkDuplicatedTeamName(String teamName){
@@ -83,6 +95,7 @@ public class TeamService {
         }
         else return true;
     }
+
     public Board findBoardById(Long boardId){
         log.info("보드 조회");
         Optional<Board> OptionalBoard = boardRepository.findById(boardId);
@@ -94,6 +107,7 @@ public class TeamService {
             throw new IllegalArgumentException("존재하지 않는 보드입니다.");
         }
     }
+
     public User findUserById(String username){
         log.info("유저 조회");
         Optional<User> optionalUser = userRepository.findByUsername(username);
@@ -116,6 +130,17 @@ public class TeamService {
         }
     }
 
+    private Member findByMemberId(Long memberId) {
+        log.info("멤버 조회");
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        if(optionalMember.isPresent()){
+            return optionalMember.get();
+        }else {
+            log.error("멤버가 존재하지 않습니다.");
+            throw new IllegalArgumentException("멤버가 존재하지 않습니다.");
+        }
+    }
+
     public boolean checkDuplicatedLeader(Long teamId, String role){
         log.info("팀장은 팀당 한명뿐.");
         Optional<Team> optionalTeam = teamRepository.findById(teamId);
@@ -132,6 +157,7 @@ public class TeamService {
         }
         return true;
     }
+
     public boolean checkDuplicatedMember(Long teamId, User user){
         log.info("중복 멤버 체크.");
         Team team = findTeamById(teamId);
@@ -160,11 +186,10 @@ public class TeamService {
     }
 
     //
-    public boolean checkInviteAuthorization(Long teamId, User teamLeader){
-        log.info("팀 초대 권한 체크");
+    public boolean checkLeaderAuthorization(Long teamId, User teamLeader){
+        log.info("팀 리더 권한 체크");
         List<Member> teamMember = memberRepository.findByTeam_Id(teamId);
         Member member = null;
-        // user는 초대를 하는 사람 -> 초대하는 사람이 이미 팀 멤버인지 확인
         for(Member m : teamMember){
             if(m.getUser().getUserId().equals(teamLeader.getUserId())){
                 member = m;
@@ -176,12 +201,13 @@ public class TeamService {
             String role = member.getRole();
             // 초대하는 사람의 권한 체크 : Leader만 초대 가능
             if (member.getTeam().getId() == teamId && role.equals("leader")) {
-                log.info("팀장은 초대할 수 있습니다.");
+                log.info("팀장은 가능한 권한 있습니다.");
                 return true;
             } else {
                 log.error("팀장만 초대할 수 있습니다.");
-                throw new IllegalArgumentException("팀장만 초대할 수 있습니다.");
+                throw new IllegalArgumentException("팀장만 접근 할 수 있습니다.");
             }
         }else throw new IllegalArgumentException("로그인된 유저는 이 팀의 멤버가 아닙니다.");
     }
+
 }
