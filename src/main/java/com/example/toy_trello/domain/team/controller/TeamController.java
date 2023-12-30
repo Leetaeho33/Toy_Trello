@@ -16,6 +16,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,16 +55,10 @@ public class TeamController {
     }
 
     @DeleteMapping("leave/team/{teamId}")
-    public ResponseEntity<TeamResponseDto> leaveTeam(@PathVariable Long teamId,
-                                                     @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<?> leaveTeam(@PathVariable Long teamId,
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.status(HttpStatus.OK).
                 body(teamService.leaveTeam(teamId, userDetails.getUser()));
     }
 
-    @PutMapping("leader/team/{teamId}/member/{memberId}")
-    public ResponseEntity<TeamResponseDto> setLeader(@PathVariable Long teamId,
-                                                     @PathVariable Long memberId){
-        return ResponseEntity.status(HttpStatus.OK).
-                body(teamService.setLeader(teamId, memberId));
-    }
 }
