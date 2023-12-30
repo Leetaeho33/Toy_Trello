@@ -8,6 +8,7 @@ import com.example.toy_trello.domain.comment.dto.PageDto;
 import com.example.toy_trello.domain.comment.entity.Comment;
 import com.example.toy_trello.domain.comment.exception.CommentErrorCode;
 import com.example.toy_trello.domain.comment.exception.CommentExistsException;
+import com.example.toy_trello.domain.comment.exception.OutOfRangeException;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.toy_trello.domain.comment.exception.CommentErrorCode.NO_COMMENT;
+import static com.example.toy_trello.domain.comment.exception.CommentErrorCode.COMMENT_NOT_FOUND;
+import static com.example.toy_trello.domain.comment.exception.CommentErrorCode.OUT_OF_RANGE;
 
 
 @RequiredArgsConstructor
@@ -65,19 +67,13 @@ public class CommentService {
         log.info("댓글 삭제 완료");
     }
 
-//    public List<CommentResponseDto> getAll() {
-//        log.info("댓글 조회");
-//        List<Comment> comments = commentRepository.findAll();
-//
-//
-//    }
-
     private Comment findCommentById(Long commentId){
         log.info("댓글 조회 시작");
         return commentRepository.findById(commentId).orElseThrow(()->
-                new CommentExistsException(NO_COMMENT));
+                new CommentExistsException(COMMENT_NOT_FOUND));
     }
 
+    // Card 도메인 예외 사용
     private Card findCardById(Long cardId){
         log.info("카드 조회 시작");
         return cardRepository.findById(cardId).orElseThrow(()->
@@ -93,10 +89,15 @@ public class CommentService {
 
     public PageDto getComments(Long cardId) {
         Pageable pageable = PageRequest.of(0,5);
+
         Page<Comment> result = commentRepository.findByCard_CardId(cardId, pageable);
+        if(result.isEmpty()){
+            log.error("댓글이 존재하지 않습니다..)");
+            throw new CommentExistsException(COMMENT_NOT_FOUND);
+        }
         var data = result.getContent().stream()
-                .map(CommentResponseDto::new)
-                .toList();
+                    .map(CommentResponseDto::new)
+                    .toList();
 
         return new PageDto(data,
                 result.getTotalElements(),
@@ -104,7 +105,6 @@ public class CommentService {
                 pageable.getPageNumber(),
                 data.size()
         );
-
     }
 
     public PageDto getCommentsPage(Long cardId, int currentPage) {
@@ -112,6 +112,10 @@ public class CommentService {
         int pageSize = pageable.getPageSize();
         if(currentPage<pageSize-1){
             Page<Comment> result = commentRepository.findByCard_CardId(cardId, pageable);
+            if(result.isEmpty()){
+                log.error("댓글이 존재하지 않습니다..)");
+                throw new CommentExistsException(COMMENT_NOT_FOUND);
+            }
             var data = result.getContent().stream()
                     .map(CommentResponseDto::new)
                     .toList();
@@ -123,7 +127,7 @@ public class CommentService {
                     data.size()
             );
         }else{
-            throw new IllegalArgumentException("페이지 범위 밖입니다.");
+            throw new OutOfRangeException(OUT_OF_RANGE);
         }
     }
 }
