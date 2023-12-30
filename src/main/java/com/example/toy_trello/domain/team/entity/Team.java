@@ -29,7 +29,6 @@ public class Team extends BaseEntity {
 
 
     @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
-
     private List<Member> members = new ArrayList<>();
 
     @ManyToOne

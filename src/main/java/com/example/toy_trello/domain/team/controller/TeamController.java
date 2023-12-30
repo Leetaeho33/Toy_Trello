@@ -4,6 +4,7 @@ import com.example.toy_trello.domain.member.dto.MemberResponseDto;
 import com.example.toy_trello.domain.team.dto.TeamCreateRequestDto;
 import com.example.toy_trello.domain.team.dto.TeamCreateResponseDto;
 import com.example.toy_trello.domain.team.dto.TeamMemberRequestDto;
+import com.example.toy_trello.domain.team.dto.TeamResponseDto;
 import com.example.toy_trello.domain.team.service.TeamService;
 import com.example.toy_trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vi/api/teams")
+@RequestMapping("/api/vi/teams")
 public class TeamController {
     private final TeamService teamService;
 
@@ -29,12 +30,12 @@ public class TeamController {
     }
 
     @PutMapping("/{teamId}")
-    public ResponseEntity<List<MemberResponseDto>> inviteMember
+    public ResponseEntity<TeamResponseDto> inviteMember
                                                         (@RequestBody TeamMemberRequestDto teamMemberRequestDto,
                                                         @PathVariable Long teamId,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.status(HttpStatus.OK).body(teamService.inviteMember(teamMemberRequestDto,
-                                                        teamId, userDetails));
+                                                        teamId, userDetails.getUser()));
     }
 
 }
