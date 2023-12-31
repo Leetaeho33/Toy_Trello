@@ -3,8 +3,11 @@ package com.example.toy_trello.domain.card.service;
 import com.example.toy_trello.column.entity.Column;
 import com.example.toy_trello.column.repository.ColumnRepository;
 import com.example.toy_trello.domain.card.dto.CardCreateRequestDto;
+import com.example.toy_trello.domain.card.dto.CardListResponseDto;
+import com.example.toy_trello.domain.card.dto.CardMoveResponseDto;
 import com.example.toy_trello.domain.card.dto.CardResponseDto;
 import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
+import com.example.toy_trello.domain.card.dto.ColumnWithCardsResponseDto;
 import com.example.toy_trello.domain.card.dto.PageDto;
 import com.example.toy_trello.domain.card.entity.Card;
 import com.example.toy_trello.domain.card.repository.CardRepository;
@@ -13,6 +16,7 @@ import com.example.toy_trello.domain.user.UserRepository;
 import com.example.toy_trello.global.security.UserDetailsImpl;
 import java.text.ParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -169,13 +173,43 @@ public class CardService implements CardServiceInterface {
     card.columnForeign(targetColumn);//컬럼 저장
     card.setCardOrder(targetOrder);// 카드순서 저장
     cardRepository.save(card);//데이터 베이스 저장
-    return ResponseEntity.ok().body(card);
+    return ResponseEntity.ok().body(CardMoveResponseDto.builder()
+        .columnId(card.getColumn().getId())//컬럼 아이디 반환
+        .columnName(card.getColumn().getName())//컬럼 이름 반환
+        .cardId(card.getCardId())//카드 id 반환
+        .cardOrder(card.getCardOrder())//카드 순서 반환
+        .build()
+    );
   }
 
-//  public ResponseEntity<CardTransferResponseDto> cardTransferResponseDto(Long cardId, Long columnId, String cardOrder){
-//    ColumnEntity columnEntity = columnRepository.findById(columnId).orElseThrow(() -> new IllegalArgumentException("선택한 컬럼은 존재하지 않습니다."));
-//    Card card = cardRepository.findById(cardId).orElseThrow(()->new IllegalArgumentException("선택한 카드는 존재하지 않습니다."));
-//    List<ColumnEntity> result = commentRepository.findByPostId(postId, pageable);
-//  }
+  public ResponseEntity<ColumnWithCardsResponseDto> cardListInAColumn(Long columnId,Pageable pageable){
+    Column column = columnRepository.findById(columnId)
+        .orElseThrow(()->new IllegalArgumentException("선택한 컬럼은 존재하지 않습니다."));
+    Page<Card> result = cardRepository.findByColumn_IdOrderByCardOrderAsc(columnId, pageable);
+
+    var data = result.getContent().stream()
+        .map(card -> new CardListResponseDto(
+            card.getCardId(),
+            card.getCardName(),
+            card.getCardOrder()))
+        .collect(Collectors.toList());
+
+
+    PageDto pageData = new PageDto(
+        data,
+        result.getTotalElements(),
+        result.getTotalPages(),
+        pageable.getPageNumber(),
+        data.size());
+
+    ColumnWithCardsResponseDto response = new ColumnWithCardsResponseDto(
+        column.getId(),
+        column.getName(),
+        pageData
+    );
+
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
 
 }

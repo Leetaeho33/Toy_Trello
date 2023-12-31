@@ -4,6 +4,7 @@ import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
 import com.example.toy_trello.domain.comment.entity.Comment;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.util.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import com.example.toy_trello.column.entity.Column;
 import jakarta.persistence.Entity;
@@ -26,6 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Card extends BaseEntity {
 
   @Id

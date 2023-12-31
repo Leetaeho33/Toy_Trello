@@ -3,6 +3,7 @@ package com.example.toy_trello.domain.card.controller;
 import com.example.toy_trello.domain.card.dto.CardCreateRequestDto;
 import com.example.toy_trello.domain.card.dto.CardResponseDto;
 import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
+import com.example.toy_trello.domain.card.dto.ColumnWithCardsResponseDto;
 import com.example.toy_trello.domain.card.dto.PageDto;
 import com.example.toy_trello.domain.card.service.CardService;
 import java.text.ParseException;
@@ -66,7 +67,7 @@ public class CardController {
     return cardService.updateWorkerTransferCard(cardId, userId);
   }
 
-  @PutMapping("/cards/{cardId}/columns/{targetColumnId}/order/{order}")
+  @PutMapping("/{cardId}/columns/{targetColumnId}/order/{order}")
   public ResponseEntity<?> moveCard(
       @PathVariable Long cardId,
       @PathVariable Long targetColumnId,
@@ -74,5 +75,9 @@ public class CardController {
     return cardService.moveCard(cardId,targetColumnId,order);
   }
 
+  @GetMapping("/columns/{columnId}")
+  public ResponseEntity<ColumnWithCardsResponseDto> cardListInAColumn(@PathVariable Long columnId,Pageable pageable){
+    return cardService.cardListInAColumn(columnId,pageable);
+  }
 
 }

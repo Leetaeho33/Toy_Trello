@@ -16,4 +16,8 @@ public interface CardRepository extends JpaRepository<Card,Long> {
   Optional<Card> findByColumn_IdAndCardOrder(Long columnId, Long cardOrder);
   List<Card> findByColumn_IdAndCardOrderGreaterThanEqual(Long columnId, Long cardOrder);
 
+  Page<Card> findByColumn_IdOrderByCardOrderAsc(Long columnId, Pageable pageable);
+
+
+
 }
