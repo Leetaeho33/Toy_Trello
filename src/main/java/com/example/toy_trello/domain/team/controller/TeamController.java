@@ -8,6 +8,7 @@ import com.example.toy_trello.domain.team.dto.TeamResponseDto;
 import com.example.toy_trello.domain.team.service.TeamService;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import com.example.toy_trello.global.security.UserDetailsImpl;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
@@ -33,12 +34,20 @@ public class TeamController {
                 body(teamService.createTeam(teamCreateRequestDto,userDetails.getUser(), boardId));
     }
 
+    @GetMapping("/{teamId}")
+    public ResponseEntity<TeamResponseDto> getTeamMember(@PathVariable long teamId){
+        return ResponseEntity.status(HttpStatus.OK).
+                body(teamService.getTeamMember(teamId));
+    }
+
+
     @PutMapping("/invite/{teamId}")
-    public ResponseEntity<TeamResponseDto> inviteMember(@RequestBody TeamMemberRequestDto teamMemberRequestDto,
+    public ResponseEntity<CommonResponseDto> inviteMember(@RequestBody TeamMemberRequestDto teamMemberRequestDto,
                                                         @PathVariable Long teamId,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.status(HttpStatus.OK).body(teamService.inviteMember(teamMemberRequestDto,
-                                                        teamId, userDetails.getUser()));
+        teamService.inviteMember(teamMemberRequestDto, teamId, userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.OK).
+                body(new CommonResponseDto("팀원 초대가 성공했습니다.", HttpStatus.OK.value()));
     }
     @DeleteMapping("/exile/team/{teamId}/member/{memberId}")
     public ResponseEntity<TeamResponseDto> exileMember(@PathVariable Long teamId, @PathVariable Long memberId,

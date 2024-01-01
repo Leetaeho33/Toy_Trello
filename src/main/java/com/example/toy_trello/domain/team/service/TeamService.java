@@ -62,8 +62,17 @@ public class TeamService {
         return new TeamCreateResponseDto(teamName, description, board.getBoardName(), member);
     }
 
+    public TeamResponseDto getTeamMember(long teamId) {
+        Team team = findTeamById(teamId);
+        List<MemberResponseDto> memberResponseDto = transEntityToDtoList(team);
+        for (MemberResponseDto memberResponseDto1 : memberResponseDto) {
+            log.info(memberResponseDto1.getMemberName());
+        }
+        return new TeamResponseDto(team.getTeamName(), team.getDescription(),memberResponseDto);
+    }
+
     // 팀장만 팀원 초대 가능
-    public TeamResponseDto inviteMember(TeamMemberRequestDto teamMemberRequestDto,
+    public void inviteMember(TeamMemberRequestDto teamMemberRequestDto,
                                         Long teamId, User user) {
         log.info("멤버 초대");
         User requestMember = findUserById(teamMemberRequestDto.getUsername());
@@ -77,8 +86,12 @@ public class TeamService {
                 memberRepository.save(member);
             }
         }
-        return new TeamResponseDto(team.getTeamName(),
-                team.getDescription(), transEntityToDtoList(team));
+        //왜 메소드가 끝나고 나서 memebr가 save가 되는지 모르겠습니다...
+        // 위에서 이미 save가 끝나있어야 하는데..
+//        List<MemberResponseDto> memberResponseDto = transEntityToDtoList(team);
+//        for(MemberResponseDto memberResponseDto1 : memberResponseDto){
+//            log.info(memberResponseDto1.getMemberName());
+//        }
     }
 
     // 팀장만 팀원 추방 가능
@@ -280,4 +293,5 @@ public class TeamService {
             return null;
         }
     }
+
 }
