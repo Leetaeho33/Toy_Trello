@@ -27,6 +27,7 @@ public interface CardRepository extends JpaRepository<Card,Long> {
 
   Optional<Card> findFirstByColumn_IdOrderByCardOrderDesc(Long columnId);
 
+  Optional<Card> findByCardOrder(Long cardOrder);
 
   @EntityGraph(attributePaths = {"user"})
   @Query("SELECT c FROM Card c WHERE c.column.id = :columnId")

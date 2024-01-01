@@ -222,8 +222,34 @@ public class CardService implements CardServiceInterface {
     else if(cardId.equals(cardOrderGreat.get().getCardId()) && cardOrderGreat.get().getCardOrder() <= targetOrder){
       throw new IllegalArgumentException("같은 id, 최대 cardOrder입니다.");
     }
-    else if(Objects.equals(card.getColumn().getId(),targetColumnId) && cardOrderGreat.get().getCardOrder() < targetOrder){
-      throw new IllegalArgumentException("컬럼 내 갯수를 초과한 cardOrder로 변경할 수 없습니다.");
+    else if(Objects.equals(card.getColumn().getId(),targetColumnId) && cardOrderGreat.get().getCardOrder() <= targetOrder){
+      Long temp = cardOrderGreat.get().getCardOrder();
+      cardOrderGreat.get().setCardOrder(card.getCardOrder());
+      card.setCardOrder(temp);
+      cardRepository.save(card);
+      return ResponseEntity.ok().body(CardMoveResponseDto.builder()
+          .columnId(card.getColumn().getId())//컬럼 아이디 반환
+          .columnName(card.getColumn().getName())//컬럼 이름 반환
+          .cardId(card.getCardId())//카드 id 반환
+          .cardOrder(card.getCardOrder())//카드 순서 반환
+          .build()
+      );
+      //targetOrder를 cardOrderGreat과 같은 수로 하면 컬럼안 카드 갯수를 초과하는 cardOrder를 생성함 cardOrder+1 == cardOrderGreat
+    }
+    else if(Objects.equals(card.getColumn().getId(),targetColumnId)){
+      Card cardSwitch = cardRepository.findByColumn_IdAndCardOrder(targetColumnId, targetOrder)
+          .orElseThrow(()->new NullPointerException("targetOrder를 가진 카드 객체를 찾을 수 없습니다."));
+      Long temp = card.getCardOrder();
+      card.setCardOrder(targetOrder);
+      cardSwitch.setCardOrder(temp);
+      cardRepository.save(card);
+      return ResponseEntity.ok().body(CardMoveResponseDto.builder()
+          .columnId(card.getColumn().getId())
+          .columnName(card.getColumn().getName())
+          .cardId(card.getCardId())
+          .cardOrder(card.getCardOrder())
+          .build()
+      );
     }
 
     if(targetOrder >= cardOrderGreat.get().getCardOrder()+1)//if(추가할 카드의 cardOrder > 기존 카드중 높은 cardOrder)
