@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 
 @Table
 @Entity
@@ -16,7 +17,9 @@ public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String role;
+
+    @Enumerated(value = EnumType.STRING)
+    private MemberRole role;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -27,15 +30,15 @@ public class Member extends BaseEntity {
     private Team team;
 
     @Builder
-    public Member(String role, User user) {
+    public Member(MemberRole role, User user) {
         this.role = role;
         this.user = user;
-
     }
+
     public void setTeam(Team team){
         this.team = team;
     }
-    public void updateRole(String role){
+    public void updateRole(MemberRole role){
         this.role = role;
     }
 }

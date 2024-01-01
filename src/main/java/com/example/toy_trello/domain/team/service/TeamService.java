@@ -2,9 +2,9 @@ package com.example.toy_trello.domain.team.service;
 
 import com.example.toy_trello.domain.board.entity.Board;
 import com.example.toy_trello.domain.board.repository.BoardRepository;
-import com.example.toy_trello.domain.comment.dto.CommentResponseDto;
 import com.example.toy_trello.domain.member.dto.MemberResponseDto;
 import com.example.toy_trello.domain.member.entity.Member;
+import com.example.toy_trello.domain.member.entity.MemberRole;
 import com.example.toy_trello.domain.member.exception.MemberNotFoundException;
 import com.example.toy_trello.domain.member.exception.NotExistMemberException;
 import com.example.toy_trello.domain.member.repository.MemberRepository;
@@ -20,7 +20,6 @@ import com.example.toy_trello.domain.user.UserRepository;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.example.toy_trello.domain.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
@@ -50,9 +48,9 @@ public class TeamService {
         log.info("팀 생성");
         String teamName = teamCreateRequestDto.getTeamName();
         String description = teamCreateRequestDto.getDescription();
-        Member member = new Member("leader", user);
         Board board = findBoardById(boardId);
 
+        Member member = new Member(MemberRole.LEADER, user);
         if(checkDuplicatedTeamName(teamName)){
             Team team = Team.builder().teamName(teamName).description(description)
                     .board(board).build();
@@ -69,7 +67,7 @@ public class TeamService {
                                         Long teamId, User user) {
         log.info("멤버 초대");
         User requestMember = findUserById(teamMemberRequestDto.getUsername());
-        Member member = new Member("teamMember", requestMember);
+        Member member = new Member(MemberRole.MEMBER, requestMember);
         Team team = findTeamById(teamId);
         //한팀에 중복된 멤버가 있는지
         if(checkDuplicatedMember(teamId, requestMember)){
@@ -124,7 +122,7 @@ public class TeamService {
                 }
                 // 업데이트를 할 때 transaction을 걸면 좋은데 여기선 delete와 함께 있어서 transaction을 못검..
                 // 이거 잘 하면 transaction걸고 할 수 있을 것 같은데 모르겠습니다 ㅠ
-                newLeader.updateRole("leader");
+                newLeader.updateRole(MemberRole.LEADER);
                 memberRepository.save(newLeader);
             }else memberRepository.delete(member);
         log.info("팀 탈퇴 완료");
@@ -155,8 +153,7 @@ public class TeamService {
         log.info("보드 조회");
         Optional<Board> OptionalBoard = boardRepository.findById(boardId);
         if(OptionalBoard.isPresent()){
-            Board board = OptionalBoard.get();
-            return board;
+            return OptionalBoard.get();
         }else {
             log.error("보드가 존재 하지 않습니다.");
             throw new IllegalArgumentException("존재하지 않는 보드입니다.");
@@ -245,8 +242,7 @@ public class TeamService {
         Member member = null;
         for (Member m : teamMember) {
             if (m.getUser().getUserId().equals(user.getUserId())) {
-                member = m;
-                return member;
+                return  m;
             }
         }
         if(member==null) throw new NotTeamMemberException(NOT_TEAM_MEMBER);
@@ -256,9 +252,9 @@ public class TeamService {
     public boolean checkLeaderAuthorization(Long teamId, User teamLeader){
         log.info("팀 리더 권한 체크");
         Member member = findMemberByUser(teamId, teamLeader);
-        String role = member.getRole();
+        MemberRole role = member.getRole();
         // 초대하는 사람의 권한 체크 : Leader만 초대 가능
-        if (member.getTeam().getId() == teamId && role.equals("leader")) {
+        if (member.getTeam().getId() == teamId && role.equals(MemberRole.LEADER)) {
             log.info("팀장은 가능한 권한 입니다.");
             return true;
         } else {
@@ -269,8 +265,8 @@ public class TeamService {
     public void swapRole(Member newLeader, Member currentLeader, Long teamId){
         log.info("팀장 변경");
         if(checkLeaderAuthorization(teamId, currentLeader.getUser())){
-            currentLeader.updateRole("teamMember");
-            newLeader.updateRole("leader");
+            currentLeader.updateRole(MemberRole.MEMBER);
+            newLeader.updateRole(MemberRole.LEADER);
         }
         log.info("팀장 변경 완료");
     }
