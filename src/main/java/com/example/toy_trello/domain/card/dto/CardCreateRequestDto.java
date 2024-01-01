@@ -25,4 +25,7 @@ public class CardCreateRequestDto {
     return dateFormat.parse(this.dueDate);
   }
 
+  public void setCardOrder(long cardOrder) {
+    this.cardOrder = cardOrder;
+  }
 }
