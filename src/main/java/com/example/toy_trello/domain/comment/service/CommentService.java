@@ -1,6 +1,7 @@
 package com.example.toy_trello.domain.comment.service;
 
 import com.example.toy_trello.domain.card.entity.Card;
+import com.example.toy_trello.domain.card.exception.CardExistsException;
 import com.example.toy_trello.domain.card.repository.CardRepository;
 import com.example.toy_trello.domain.comment.dto.CommentRequestDto;
 import com.example.toy_trello.domain.comment.dto.CommentResponseDto;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.example.toy_trello.domain.card.exception.CardErrorCode.CARD_NOT_FOUND;
 import static com.example.toy_trello.domain.comment.exception.CommentErrorCode.COMMENT_NOT_FOUND;
 import static com.example.toy_trello.domain.comment.exception.CommentErrorCode.OUT_OF_RANGE;
 
@@ -30,7 +32,6 @@ import static com.example.toy_trello.domain.comment.exception.CommentErrorCode.O
 public class CommentService {
     private final CommentRepository commentRepository;
     private final CardRepository cardRepository;
-    private final UserRepository userRepository;
 
     public CommentResponseDto post(CommentRequestDto commentRequestDto, Long cardId, User user) {
         log.info("댓글 작성");
@@ -77,7 +78,7 @@ public class CommentService {
     private Card findCardById(Long cardId){
         log.info("카드 조회 시작");
         return cardRepository.findById(cardId).orElseThrow(()->
-                new IllegalArgumentException("해당 카드는 존재하지 않습니다."));
+                new CardExistsException(CARD_NOT_FOUND));
     }
 
     private boolean checkAuthorization(User user, Comment comment){
