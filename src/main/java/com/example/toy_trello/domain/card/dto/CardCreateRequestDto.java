@@ -2,6 +2,7 @@ package com.example.toy_trello.domain.card.dto;
 
 
 import com.example.toy_trello.column.entity.Column;
+import com.example.toy_trello.domain.team.entity.Team;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +19,7 @@ public class CardCreateRequestDto {
   private String cardColor;
   private String dueDate;
   private Long cardOrder;
+  private Long teamId;
 
   // 문자열로 받은 날짜를 Date 객체로 변환
   public Date getDueDate() throws ParseException {

@@ -72,7 +72,7 @@ public class Card extends BaseEntity {
 
   @Builder
   public Card(Column column, String cardName, String cardDescription, String cardColor, User user,
-      Date dueDate, Long cardOrder) {
+      Date dueDate, Long cardOrder,Team team) {
     this.column = column;
     this.cardName = cardName;
     this.cardDescription = cardDescription;
@@ -80,6 +80,7 @@ public class Card extends BaseEntity {
     this.user = user;
     this.dueDate = dueDate;
     this.cardOrder = cardOrder;
+    this.team = team;
   }
 
   public void update(CardUpdateRequestDto cardUpdateRequestDto) {

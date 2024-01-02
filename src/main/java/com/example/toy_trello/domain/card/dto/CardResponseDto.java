@@ -1,6 +1,7 @@
 package com.example.toy_trello.domain.card.dto;
 
 import com.example.toy_trello.domain.card.entity.Card;
+import com.example.toy_trello.domain.member.entity.MemberRole;
 import lombok.Getter;
 
 
@@ -14,8 +15,8 @@ public class CardResponseDto {
   private final String dueDate;
   private final String username;
   private final Long cardOrder;
+  private final Long teamId;
 
- // private UserState userstate;
 
   public CardResponseDto(Card card){
     this.cardId = card.getCardId();
@@ -26,8 +27,9 @@ public class CardResponseDto {
     this.dueDate = String.valueOf(card.getDueDate());
     this.username = card.getUser().getUsername();
     this.cardOrder = card.getCardOrder();
+    this.teamId = card.getTeam().getId();
 
-    //this.userstate = card.getUserstate();
+
   }
 
   public static CardResponseDto of(Card card) {
