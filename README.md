@@ -36,7 +36,7 @@
 
 ## ERD 
 
-![image]()
+![trello](https://github.com/Leetaeho33/Toy_Trello/assets/144213900/306ca938-9ce4-4c25-a001-4893566b9ecf)
 
 
 ## API 명세
