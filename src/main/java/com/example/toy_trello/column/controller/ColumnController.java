@@ -4,6 +4,7 @@ import com.example.toy_trello.column.dto.requestDto.ColumnRequestDto;
 import com.example.toy_trello.column.dto.responseDto.ColumnResponseDto;
 import com.example.toy_trello.column.entity.Column;
 import com.example.toy_trello.column.service.ColumnService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,5 +78,5 @@ public class ColumnController {
         columnService.updateColumnOrder(id, newPosition);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+@Getter
 }
