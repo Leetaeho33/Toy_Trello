@@ -1,8 +1,11 @@
 package com.example.toy_trello.column.entity;
-
 import com.example.toy_trello.domain.board.entity.Board;
+import com.example.toy_trello.domain.card.entity.Card;
 import jakarta.persistence.*;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -24,6 +27,11 @@ public class Column {
 
     public Column() {
     }
+
+    @OneToMany(mappedBy = "column", cascade = CascadeType.ALL)
+    @OrderBy("cardOrder ASC")
+    private List<Card> cards = new ArrayList<>();
+
 
     // 생성자를 통해 id 할당
     public Column(Long id, String name, Board board, Long order) {
@@ -51,6 +59,7 @@ public class Column {
     public void setOrder(Long order) {
         this.order = order;
     }
+
 }
 
 

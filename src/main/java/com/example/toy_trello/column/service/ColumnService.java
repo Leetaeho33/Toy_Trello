@@ -1,6 +1,7 @@
 package com.example.toy_trello.column.service;
 
 import com.example.toy_trello.column.entity.Column;
+import com.example.toy_trello.domain.card.entity.Card;
 
 import java.util.List;
 
@@ -13,5 +14,9 @@ public interface ColumnService {
     Column createColumn(Long boardId, Column column); // 메서드 오버로딩
 
     void updateColumnOrder(Long columnId, Long newPosition);
+
+    // ColumnService.java에 Card 조회 메서드 추가
+    List<Card> getCardsByColumnId(Long columnId);
+
 
 }
