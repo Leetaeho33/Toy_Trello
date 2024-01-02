@@ -13,6 +13,7 @@ public class CardResponseDto {
 
   private final String dueDate;
   private final String username;
+  private final Long cardOrder;
 
  // private UserState userstate;
 
@@ -24,6 +25,7 @@ public class CardResponseDto {
 
     this.dueDate = String.valueOf(card.getDueDate());
     this.username = card.getUser().getUsername();
+    this.cardOrder = card.getCardOrder();
 
     //this.userstate = card.getUserstate();
   }
