@@ -78,5 +78,4 @@ public class ColumnController {
         columnService.updateColumnOrder(id, newPosition);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-@Getter
 }
