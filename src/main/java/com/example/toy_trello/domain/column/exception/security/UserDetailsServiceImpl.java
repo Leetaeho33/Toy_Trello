@@ -1,4 +1,4 @@
-package com.example.toy_trello.global.security;
+package com.example.toy_trello.domain.column.exception.security;
 
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;

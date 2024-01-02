@@ -2,7 +2,7 @@ package com.example.toy_trello.global.config;
 
 import com.example.toy_trello.global.jwt.JwtAuthorizationFilter;
 import com.example.toy_trello.global.jwt.JwtUtil;
-import com.example.toy_trello.global.security.UserDetailsServiceImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

@@ -12,7 +12,7 @@ import com.example.toy_trello.domain.board.exception.BoardExistsException;
 import com.example.toy_trello.domain.board.repository.BoardRepository;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
-import com.example.toy_trello.global.security.UserDetailsImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsImpl;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

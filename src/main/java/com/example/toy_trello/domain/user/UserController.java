@@ -3,7 +3,7 @@ package com.example.toy_trello.domain.user;
 import com.example.toy_trello.domain.user.dto.*;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import com.example.toy_trello.global.jwt.JwtUtil;
-import com.example.toy_trello.global.security.UserDetailsImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

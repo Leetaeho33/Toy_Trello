@@ -4,7 +4,7 @@ import com.example.toy_trello.domain.board.dto.BoardCreateRequestDto;
 import com.example.toy_trello.domain.board.dto.BoardUpdateRequestDto;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.util.BaseEntity;
-import com.example.toy_trello.global.security.UserDetailsImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsImpl;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

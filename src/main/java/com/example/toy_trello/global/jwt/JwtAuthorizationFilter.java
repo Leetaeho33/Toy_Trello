@@ -1,8 +1,8 @@
 package com.example.toy_trello.global.jwt;
 
 import com.example.toy_trello.global.dto.CommonResponseDto;
-import com.example.toy_trello.global.security.UserDetailsImpl;
-import com.example.toy_trello.global.security.UserDetailsServiceImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
