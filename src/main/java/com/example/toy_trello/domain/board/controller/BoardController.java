@@ -1,12 +1,12 @@
 package com.example.toy_trello.domain.board.controller;
 
 import com.example.toy_trello.domain.board.dto.BoardCreateRequestDto;
+import com.example.toy_trello.domain.board.dto.BoardPageDto;
 import com.example.toy_trello.domain.board.dto.BoardResponseDto;
 import com.example.toy_trello.domain.board.dto.BoardUpdateRequestDto;
 import com.example.toy_trello.domain.board.service.BoardService;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import com.example.toy_trello.global.security.UserDetailsImpl;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,19 +36,14 @@ public class BoardController {
     return ResponseEntity.ok().body(new CommonResponseDto("생성 되었습니다.", HttpStatus.OK.value()));
   }
 
-  // 전체 조회
-  @GetMapping
-  public List<BoardResponseDto> getBoardList() {
-    return boardService.getBoardList();
-  }
 
-  // 전체 조회 (페이징)
-//  @GetMapping
-//  public Page<BoardResponseDto> getBoardList(Pageable pageable) {
-//
-//      return boardService.getBoardList(pageable);
-//
-//  }
+   //전체 조회 (페이징)
+  @GetMapping
+  public BoardPageDto getBoardList() {
+
+      return boardService.getBoardList();
+
+  }
 
   // 선택 조회
   @GetMapping("/{boardId}")

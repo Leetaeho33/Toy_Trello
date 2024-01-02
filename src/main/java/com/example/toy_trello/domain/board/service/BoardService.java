@@ -4,6 +4,7 @@ import static com.example.toy_trello.domain.board.exception.BoardErrorCode.NO_AL
 import static com.example.toy_trello.domain.board.exception.BoardErrorCode.NO_BOARD;
 
 import com.example.toy_trello.domain.board.dto.BoardCreateRequestDto;
+import com.example.toy_trello.domain.board.dto.BoardPageDto;
 import com.example.toy_trello.domain.board.dto.BoardResponseDto;
 import com.example.toy_trello.domain.board.dto.BoardUpdateRequestDto;
 import com.example.toy_trello.domain.board.entity.Board;
@@ -15,7 +16,9 @@ import com.example.toy_trello.global.security.UserDetailsImpl;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,14 +37,19 @@ public class BoardService {
     boardRepository.save(board);
   }
 
-    public List<BoardResponseDto> getBoardList() {
-    List<Board> boardList = boardRepository.findAll();
+    public BoardPageDto getBoardList() {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Board> boardList = boardRepository.findAll(pageable);
     List<BoardResponseDto> boardResponseDto = new ArrayList<>();
 
     for(Board board : boardList) {
       boardResponseDto.add(new BoardResponseDto(board));
     }
-    return boardResponseDto;
+    return new BoardPageDto(boardResponseDto,
+        boardList.getTotalElements(),
+        boardList.getTotalPages(),
+        pageable.getPageNumber(),
+        boardResponseDto.size());
   }
 
 //  public Page<BoardResponseDto> getBoardList(Pageable pageable) {
