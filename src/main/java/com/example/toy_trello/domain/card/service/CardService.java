@@ -1,5 +1,9 @@
 package com.example.toy_trello.domain.card.service;
 
+import static com.example.toy_trello.domain.card.exception.CardErrorCode.CARD_NOT_FOUND;
+import static com.example.toy_trello.domain.card.exception.CardErrorCode.COLUMN_NOT_FOUND;
+import static com.example.toy_trello.domain.card.exception.CardErrorCode.USER_NOT_FOUND;
+
 import com.example.toy_trello.column.entity.Column;
 import com.example.toy_trello.column.repository.ColumnRepository;
 import com.example.toy_trello.domain.card.dto.CardCreateRequestDto;
@@ -10,7 +14,13 @@ import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
 import com.example.toy_trello.domain.card.dto.ColumnWithCardsResponseDto;
 import com.example.toy_trello.domain.card.dto.PageDto;
 import com.example.toy_trello.domain.card.entity.Card;
+import com.example.toy_trello.domain.card.exception.CardExistsException;
+import com.example.toy_trello.domain.card.exception.ColumnExistsException;
+import com.example.toy_trello.domain.card.exception.UserExistsException;
 import com.example.toy_trello.domain.card.repository.CardRepository;
+import com.example.toy_trello.domain.member.repository.MemberRepository;
+import com.example.toy_trello.domain.team.entity.Team;
+import com.example.toy_trello.domain.team.repository.TeamRepository;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
 import com.example.toy_trello.global.security.UserDetailsImpl;
@@ -42,6 +52,10 @@ public class CardService implements CardServiceInterface {
 
   private final ColumnRepository columnRepository;
 
+  private final MemberRepository memberRepository;
+
+  private final TeamRepository teamRepository;
+
   @Override
   public UserDetailsImpl getAuth() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -60,7 +74,7 @@ public class CardService implements CardServiceInterface {
 
   public CardResponseDto createCard(CardCreateRequestDto requestDto) throws ParseException {
     Column column = columnRepository.findById(requestDto.getColumnId())
-        .orElseThrow(() -> new IllegalArgumentException("컬럼이 존재하지 않습니다."));
+        .orElseThrow(() -> new ColumnExistsException(COLUMN_NOT_FOUND));
     Optional<Card> cardInColumn = cardRepository.findFirstByColumn_IdOrderByCardOrderDesc(
         requestDto.getColumnId());
     //컬럼id를 통해서 카드를 찾기
@@ -119,20 +133,20 @@ public class CardService implements CardServiceInterface {
 
   public ResponseEntity<?> updateWorkerTransferCard(Long cardId, Long userId) {
 
-    User user = userRepository.findById(getAuth().getUser().getUserId())
-        .orElseThrow(() -> new IllegalArgumentException("선택한 유저는 존재하지 않습니다."));//선택한 유저 찾기
+    User user = userRepository.findById(getAuth().getUser().getUserId())//현재 로그인 된 유저정보
+        .orElseThrow(() -> new UserExistsException(USER_NOT_FOUND));//선택한 유저 찾기
 
     Card card = cardRepository.findById(cardId)
-        .orElseThrow(() -> new IllegalArgumentException("선택한 카드는 존재하지 않습니다."));//선택한 카드 찾기
+        .orElseThrow(() -> new CardExistsException(CARD_NOT_FOUND));//선택한 카드 찾기
 
-    if (!card.getUser().getUserId().equals(user.getUserId())) {
+    if (!card.getUser().getUserId().equals(user.getUserId())) {// 현재 로그인 된 유저가 팀 멤버로서 카드 소유권을 가진지 확인하기
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body("다른 사용자의 카드를 수정할 수 없습니다.");
       //카드에 저장된 아이디와 현재 저장된 유저와 id 일치 여부 확인
     }
 
-    User userUpdated = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("선택한 유저는 존재하지 않습니다."));
-
+    User userUpdated = userRepository.findById(userId)//옮겨질 유저 정보
+        .orElseThrow(() -> new UserExistsException(USER_NOT_FOUND));
+  // userUpdated 부분을 memberUpdated로 수정함
     card.userUpdate(userUpdated);
     saveCard(card);
 
@@ -144,10 +158,10 @@ public class CardService implements CardServiceInterface {
   public ResponseEntity<?> updateCard(Long cardId, CardUpdateRequestDto cardUpdateRequestDto) {
 
     User user = userRepository.findById(getAuth().getUser().getUserId())
-        .orElseThrow(() -> new IllegalArgumentException("선택한 유저는 존재하지 않습니다."));//선택한 유저 찾기
+        .orElseThrow(() -> new UserExistsException(USER_NOT_FOUND));//선택한 유저 찾기
 
     Card card = cardRepository.findById(cardId)
-        .orElseThrow(() -> new IllegalArgumentException("선택한 카드는 존재하지 않습니다."));//선택한 카드 찾기
+        .orElseThrow(() -> new CardExistsException(CARD_NOT_FOUND));//선택한 카드 찾기
 
     if (!card.getUser().getUserId().equals(user.getUserId())) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body("다른 사용자의 카드는 수정할 수 없습니다.");
@@ -162,7 +176,7 @@ public class CardService implements CardServiceInterface {
   @Override
   public ResponseEntity<?> deleteCard(Long cardId) {
     Card card = cardRepository.findById(cardId)
-        .orElseThrow(() -> new IllegalArgumentException("선택한 카드는 존재하지 않습니다."));
+        .orElseThrow(() -> new CardExistsException(CARD_NOT_FOUND));
 
     List<Card> cardList = cardRepository.findByCardOrderGreaterThan(card.getCardOrder());
     for(Card subCard: cardList){
@@ -184,7 +198,7 @@ public class CardService implements CardServiceInterface {
   @Override
   public Card getCardById(Long id) {
     return cardRepository.findById(id).orElseThrow
-        (() -> new IllegalArgumentException("선택한 카드는 존재하지 않습니다."));
+        (() -> new CardExistsException(CARD_NOT_FOUND));
   }
 
   @Override
@@ -195,9 +209,9 @@ public class CardService implements CardServiceInterface {
   public ResponseEntity<?> moveCard(Long cardId, Long targetColumnId, Long targetOrder) {
 
     Card card = cardRepository.findById(cardId).orElseThrow
-        (() -> new IllegalArgumentException("선택한 카드는 존재하지 않습니다."));//카드 조회
+        (() -> new CardExistsException(CARD_NOT_FOUND));//카드 조회
     Column targetColumn = columnRepository.findById(targetColumnId)
-        .orElseThrow(() -> new IllegalArgumentException("선택한 컬럼은 존재하지 않습니다."));//옮길 컬럼 존재 여부 조회
+        .orElseThrow(() -> new ColumnExistsException(COLUMN_NOT_FOUND));//옮길 컬럼 존재 여부 조회
 
 
     //추가하려는 컬럼의 카드의 cardOrder가 기존 cardOrder보다 2이상 크다면 +1로 줄이기
@@ -238,7 +252,7 @@ public class CardService implements CardServiceInterface {
     }
     else if(Objects.equals(card.getColumn().getId(),targetColumnId)){
       Card cardSwitch = cardRepository.findByColumn_IdAndCardOrder(targetColumnId, targetOrder)
-          .orElseThrow(()->new NullPointerException("targetOrder를 가진 카드 객체를 찾을 수 없습니다."));
+          .orElseThrow(()-> new CardExistsException(CARD_NOT_FOUND));
       Long temp = card.getCardOrder();
       card.setCardOrder(targetOrder);
       cardSwitch.setCardOrder(temp);
@@ -282,7 +296,7 @@ public class CardService implements CardServiceInterface {
   //한 컬럼에서 카드리스트를 카드 순서대로 출력함
   public ResponseEntity<ColumnWithCardsResponseDto> cardListInAColumn(Long columnId,Pageable pageable){
     Column column = columnRepository.findById(columnId)
-        .orElseThrow(()->new IllegalArgumentException("선택한 컬럼은 존재하지 않습니다."));
+        .orElseThrow(()->new ColumnExistsException(COLUMN_NOT_FOUND));
     Page<Card> result = cardRepository.findByColumn_IdOrderByCardOrderAsc(columnId, pageable);
 
     var data = result.getContent().stream()

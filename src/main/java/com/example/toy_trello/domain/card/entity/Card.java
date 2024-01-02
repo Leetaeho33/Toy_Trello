@@ -1,12 +1,14 @@
 package com.example.toy_trello.domain.card.entity;
 
+import com.example.toy_trello.column.entity.Column;
 import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
 import com.example.toy_trello.domain.comment.entity.Comment;
+import com.example.toy_trello.domain.member.entity.Member;
+import com.example.toy_trello.domain.team.entity.Team;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.util.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
-import com.example.toy_trello.column.entity.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +17,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.core.annotation.Order;
 
 @Entity
 @Getter
@@ -62,11 +62,17 @@ public class Card extends BaseEntity {
   @JoinColumn(name = "column_id", nullable = false)
   private Column column;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "team_id", nullable = false)
+  private Team team;
+
+
   private Long cardOrder;
 
 
   @Builder
-  public Card(Column column ,String cardName, String cardDescription, String cardColor, User user, Date dueDate,Long cardOrder) {
+  public Card(Column column, String cardName, String cardDescription, String cardColor, User user,
+      Date dueDate, Long cardOrder) {
     this.column = column;
     this.cardName = cardName;
     this.cardDescription = cardDescription;
@@ -87,9 +93,10 @@ public class Card extends BaseEntity {
     this.user = user;
   }
 
-  public void columnForeign(Column column){
+  public void columnForeign(Column column) {
     this.column = column;
   }
+
   public void setCardOrder(Long cardOrder) {
     this.cardOrder = cardOrder;
   }
