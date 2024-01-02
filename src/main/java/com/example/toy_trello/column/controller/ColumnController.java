@@ -4,6 +4,7 @@ import com.example.toy_trello.column.dto.requestDto.ColumnRequestDto;
 import com.example.toy_trello.column.dto.responseDto.ColumnResponseDto;
 import com.example.toy_trello.column.entity.Column;
 import com.example.toy_trello.column.service.ColumnService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/columns")
 public class ColumnController {
 
+    private final ColumnService columnService;
+
     @Autowired
-    private ColumnService columnService;
+    public ColumnController(ColumnService columnService) {
+        this.columnService = columnService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ColumnResponseDto>> getAllColumns() {
@@ -59,5 +64,18 @@ public class ColumnController {
     public ResponseEntity<Void> deleteColumn(@PathVariable Long id) {
         columnService.deleteColumn(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/{boardId}")
+    public ResponseEntity<ColumnResponseDto> createColumn(@PathVariable Long boardId, @RequestBody ColumnRequestDto requestDto) {
+        Column column = new Column(requestDto.getName());
+        Column createdColumn = columnService.createColumn(boardId, column);
+        return new ResponseEntity<>(new ColumnResponseDto(createdColumn.getId(), createdColumn.getName()), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}/update-order")
+    public ResponseEntity<Void> updateColumnOrder(@PathVariable Long id, @RequestParam Long newPosition) {
+        columnService.updateColumnOrder(id, newPosition);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
