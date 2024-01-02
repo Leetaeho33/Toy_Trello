@@ -48,23 +48,21 @@ public class CardController {
     return ResponseEntity.ok(response);
   }
 
-
-
-  @PutMapping("/{cardId}")
-  public ResponseEntity<?> updateCard(@PathVariable Long cardId, @RequestBody CardUpdateRequestDto postUpdateRequestDto) {
-    return cardService.updateCard(cardId, postUpdateRequestDto);
+  @PutMapping("/{cardId}/team/{teamId}")
+  public ResponseEntity<?> updateCard(@PathVariable Long cardId, @RequestBody CardUpdateRequestDto postUpdateRequestDto,@PathVariable Long teamId) {
+    return cardService.updateCard(cardId, postUpdateRequestDto,teamId);
   }
 
-  @DeleteMapping("/{cardId}")
-  public ResponseEntity<?> deleteCard(@PathVariable Long cardId) {
-    return cardService.deleteCard(cardId);
+  @DeleteMapping("/{cardId}/team/{teamId}")
+  public ResponseEntity<?> deleteCard(@PathVariable Long cardId,@PathVariable Long teamId) {
+    return cardService.deleteCard(cardId, teamId);
   }
 
 
-  @PutMapping("/card/{cardId}/user/{userId}")
+  @PutMapping("/card/{cardId}/user/{userId}/team/{teamId}")
   public ResponseEntity<?> updateWorkerTransferCard(@PathVariable Long cardId,
-      @PathVariable Long userId) {
-    return cardService.updateWorkerTransferCard(cardId, userId);
+      @PathVariable Long userId,@PathVariable Long teamId) {
+    return cardService.updateWorkerTransferCard(cardId, userId,teamId);
   }
 
   @PutMapping("/{cardId}/columns/{targetColumnId}/order/{order}")

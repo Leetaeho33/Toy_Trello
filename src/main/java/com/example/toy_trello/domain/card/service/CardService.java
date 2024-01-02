@@ -1,8 +1,7 @@
 package com.example.toy_trello.domain.card.service;
 
-import static com.example.toy_trello.domain.card.exception.CardErrorCode.CARD_NOT_FOUND;
-import static com.example.toy_trello.domain.card.exception.CardErrorCode.COLUMN_NOT_FOUND;
-import static com.example.toy_trello.domain.card.exception.CardErrorCode.USER_NOT_FOUND;
+import static com.example.toy_trello.domain.card.exception.CardErrorCode.*;
+import static com.example.toy_trello.domain.team.exception.TeamErrorCode.TEAM_NOT_FOUND;
 
 import com.example.toy_trello.column.entity.Column;
 import com.example.toy_trello.column.repository.ColumnRepository;
@@ -14,13 +13,20 @@ import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
 import com.example.toy_trello.domain.card.dto.ColumnWithCardsResponseDto;
 import com.example.toy_trello.domain.card.dto.PageDto;
 import com.example.toy_trello.domain.card.entity.Card;
+import com.example.toy_trello.domain.card.exception.CardErrorCode;
 import com.example.toy_trello.domain.card.exception.CardExistsException;
 import com.example.toy_trello.domain.card.exception.ColumnExistsException;
+import com.example.toy_trello.domain.card.exception.SameCardException;
+import com.example.toy_trello.domain.card.exception.SameIdMaxCardOrderException;
 import com.example.toy_trello.domain.card.exception.UserExistsException;
 import com.example.toy_trello.domain.card.repository.CardRepository;
+import com.example.toy_trello.domain.member.entity.Member;
+import com.example.toy_trello.domain.member.entity.MemberRole;
 import com.example.toy_trello.domain.member.repository.MemberRepository;
 import com.example.toy_trello.domain.team.entity.Team;
+import com.example.toy_trello.domain.team.exception.TeamNotFoundException;
 import com.example.toy_trello.domain.team.repository.TeamRepository;
+import com.example.toy_trello.domain.team.service.TeamService;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
 import com.example.toy_trello.global.security.UserDetailsImpl;
@@ -55,6 +61,7 @@ public class CardService implements CardServiceInterface {
   private final MemberRepository memberRepository;
 
   private final TeamRepository teamRepository;
+  private final TeamService teamService;
 
   @Override
   public UserDetailsImpl getAuth() {
@@ -73,6 +80,8 @@ public class CardService implements CardServiceInterface {
   }
 
   public CardResponseDto createCard(CardCreateRequestDto requestDto) throws ParseException {
+    Team team = teamRepository.findById(requestDto.getTeamId())
+        .orElseThrow(() -> new TeamNotFoundException(TEAM_NOT_FOUND));
     Column column = columnRepository.findById(requestDto.getColumnId())
         .orElseThrow(() -> new ColumnExistsException(COLUMN_NOT_FOUND));
     Optional<Card> cardInColumn = cardRepository.findFirstByColumn_IdOrderByCardOrderDesc(
@@ -89,6 +98,7 @@ public class CardService implements CardServiceInterface {
           .dueDate(requestDto.getDueDate())
           .cardColor(requestDto.getCardColor())
           .cardOrder(requestDto.getCardOrder())//cardOrder를 차지하고 있는 카드가 있는지 확인
+          .team(team)
           .build();
       Card cardSaved = saveCard(card);
       return new CardResponseDto(cardSaved);
@@ -108,6 +118,7 @@ public class CardService implements CardServiceInterface {
           .dueDate(requestDto.getDueDate())
           .cardColor(requestDto.getCardColor())
           .cardOrder(requestDto.getCardOrder())//cardOrder를 차지하고 있는 카드가 있는지 확인
+          .team(team)
           .build();
       Card cardSaved = saveCard(card);
       return new CardResponseDto(cardSaved);
@@ -131,17 +142,25 @@ public class CardService implements CardServiceInterface {
     );
   }
 
-  public ResponseEntity<?> updateWorkerTransferCard(Long cardId, Long userId) {
+  public ResponseEntity<?> updateWorkerTransferCard(Long cardId, Long userId,Long teamId) {
 
-    User user = userRepository.findById(getAuth().getUser().getUserId())//현재 로그인 된 유저정보
+      User user = userRepository.findById(getAuth().getUser().getUserId())//현재 로그인 된 유저정보
         .orElseThrow(() -> new UserExistsException(USER_NOT_FOUND));//선택한 유저 찾기
 
     Card card = cardRepository.findById(cardId)
         .orElseThrow(() -> new CardExistsException(CARD_NOT_FOUND));//선택한 카드 찾기
 
-    if (!card.getUser().getUserId().equals(user.getUserId())) {// 현재 로그인 된 유저가 팀 멤버로서 카드 소유권을 가진지 확인하기
+    Member cardMemberRole = teamService.findMemberByUser(teamId, user);
+
+    if (!card.getUser().getUserId().equals(user.getUserId()) && !cardMemberRole.getRole().equals( MemberRole.LEADER)) {
+      /**
+       * 로그인 된 유저가 팀 리더인지 확인함
+       * 로그인 된 유저가 카드 소유권을 가진지 확인함
+       * 두가지 모두 거짓이면 카드를 수정할 수 없다.
+       * @return ResponseEntity.status(HttpStatus.FORBIDDEN).body("다른 사용자의 카드를 수정할 수 없습니다.");
+      */
+
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body("다른 사용자의 카드를 수정할 수 없습니다.");
-      //카드에 저장된 아이디와 현재 저장된 유저와 id 일치 여부 확인
     }
 
     User userUpdated = userRepository.findById(userId)//옮겨질 유저 정보
@@ -155,7 +174,9 @@ public class CardService implements CardServiceInterface {
 
 
   @Override
-  public ResponseEntity<?> updateCard(Long cardId, CardUpdateRequestDto cardUpdateRequestDto) {
+  public ResponseEntity<?> updateCard(Long cardId, CardUpdateRequestDto cardUpdateRequestDto,Long teamId) {
+
+    //MemberRole cardMemberRole = MemberRole.MEMBER;
 
     User user = userRepository.findById(getAuth().getUser().getUserId())
         .orElseThrow(() -> new UserExistsException(USER_NOT_FOUND));//선택한 유저 찾기
@@ -163,7 +184,12 @@ public class CardService implements CardServiceInterface {
     Card card = cardRepository.findById(cardId)
         .orElseThrow(() -> new CardExistsException(CARD_NOT_FOUND));//선택한 카드 찾기
 
-    if (!card.getUser().getUserId().equals(user.getUserId())) {
+    Member cardMemberRole = teamService.findMemberByUser(teamId, user);
+
+
+
+    if (!card.getUser().getUserId().equals(user.getUserId()) && !cardMemberRole.getRole().equals( MemberRole.LEADER))
+    {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body("다른 사용자의 카드는 수정할 수 없습니다.");
       //카드에 저장된 아이디와 현재 저장된 유저와 id 일치 여부 확인
     }
@@ -174,9 +200,36 @@ public class CardService implements CardServiceInterface {
   }
 
   @Override
-  public ResponseEntity<?> deleteCard(Long cardId) {
+  public ResponseEntity<?> deleteCard(Long cardId,Long teamId) {
+
+//    Member cardMemberRole = MemberRole.MEMBER;
+
+    Team team = teamRepository.findById(teamId)
+        .orElseThrow(()->new TeamNotFoundException(TEAM_NOT_FOUND));
+
     Card card = cardRepository.findById(cardId)
         .orElseThrow(() -> new CardExistsException(CARD_NOT_FOUND));
+    User user = userRepository.findById(getAuth().getUser().getUserId())
+        .orElseThrow(() -> new UserExistsException(USER_NOT_FOUND));//선택한 유저 찾기
+
+    Member cardMemberRole = teamService.findMemberByUser(teamId, user);
+
+//    List<Member> members = card.getTeam().getMembers();
+//
+//    for(Member theMember : members){ // 멤버중 리더 찾기
+//      if(theMember.getRole().equals(MemberRole.LEADER)){
+//        cardMemberRole = MemberRole.LEADER;
+//        break;
+//      }
+//    }
+
+
+
+    if (!card.getUser().getUserId().equals(user.getUserId()) && !cardMemberRole.getRole().equals( MemberRole.LEADER))
+    {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("다른 사용자의 카드는 삭제할 수 없습니다.");
+      //카드에 저장된 아이디와 현재 저장된 유저와 id 일치 여부 확인
+    }
 
     List<Card> cardList = cardRepository.findByCardOrderGreaterThan(card.getCardOrder());
     for(Card subCard: cardList){
@@ -231,12 +284,14 @@ public class CardService implements CardServiceInterface {
       );
     }
 
-    if(Objects.equals(targetOrder, card.getCardOrder()) && Objects.equals(card.getColumn().getId(),targetColumnId)){
-      throw new IllegalArgumentException("같은 cardOrder입니다");
+
+    if (Objects.equals(targetOrder, card.getCardOrder()) && Objects.equals(card.getColumn().getId(), targetColumnId)) {
+      throw new SameCardException(CardErrorCode.SAME_CARD);
+    } else if (cardId.equals(cardOrderGreat.get().getCardId()) && cardOrderGreat.get().getCardOrder() <= targetOrder) {
+      throw new SameIdMaxCardOrderException(CardErrorCode.SAME_ID_MAX_CARD_ORDER);
     }
-    else if(cardId.equals(cardOrderGreat.get().getCardId()) && cardOrderGreat.get().getCardOrder() <= targetOrder){
-      throw new IllegalArgumentException("같은 id, 최대 cardOrder입니다.");
-    }
+
+
     else if(Objects.equals(card.getColumn().getId(),targetColumnId) && cardOrderGreat.get().getCardOrder() <= targetOrder){
       Long temp = cardOrderGreat.get().getCardOrder();
       cardOrderGreat.get().setCardOrder(card.getCardOrder());
