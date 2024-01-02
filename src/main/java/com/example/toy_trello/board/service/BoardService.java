@@ -89,4 +89,34 @@ public Page<BoardResponseDto> getBoardList(Pageable pageable) {
   }
 
 
+// 보드에 Column을 구현하기 위한 관련 코드
+//  public BoardResponseDto getBoard(Long boardId) {
+//    Board board = findById(boardId);
+//    return new BoardResponseDto(board);
+//  }
+//
+//  public void updateBoard(Long boardId, BoardCreateRequestDto boardCreateRequestDto, List<Long> columnOrder) {
+//    Board board = findById(boardId);
+//
+//    board.update(boardCreateRequestDto);
+//    boardRepository.save(board);
+//
+//    // Update column orders
+//    for (int i = 0; i < columnOrder.size(); i++) {
+//      Long columnId = columnOrder.get(i);
+//      Column column = columnRepository.findById(columnId).orElse(null);
+//      if (column != null) {
+//        column.setOrder((long) i);
+//        columnRepository.save(column);
+//      }
+//    }
+//  }
+
+
+
+
+
+
+
+
 }
