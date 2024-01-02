@@ -59,9 +59,6 @@ public class Column {
         this.order = order;
     }
 
-//    public List<Card> getCards() {
-//        return cards;
-//    }
 }
 
 
