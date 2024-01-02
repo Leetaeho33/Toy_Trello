@@ -13,4 +13,5 @@ public interface ColumnService {
     Column createColumn(Long boardId, Column column); // 메서드 오버로딩
 
     void updateColumnOrder(Long columnId, Long newPosition);
+
 }

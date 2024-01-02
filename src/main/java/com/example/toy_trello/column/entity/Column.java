@@ -14,14 +14,21 @@ public class Column {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "board_id") // 수정 전: "board_id"
+    @JoinColumn(name = "user_id")
     private Board board;
 
-    @jakarta.persistence.Column(name = "column_order") // 정답이 없는 부분.
+    @jakarta.persistence.Column(name = "column_order") // name은 임의대로 설정 가능.
     private Long order;
 
     public Column() {
-        // 생성자
+    }
+
+    // 생성자를 통해 id 할당
+    public Column(Long id, String name, Board board, Long order) {
+        this.id = id;
+        this.name = name;
+        this.board = board;
+        this.order = order;
     }
 
     public Column(String name) {

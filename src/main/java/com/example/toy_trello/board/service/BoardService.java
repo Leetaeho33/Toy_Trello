@@ -89,7 +89,7 @@ public Page<BoardResponseDto> getBoardList(Pageable pageable) {
   }
 
 
-// 보드에 Column을 구현하기 위한 관련 코드
+//// 보드에 Column을 구현하기 위한 관련 코드
 //  public BoardResponseDto getBoard(Long boardId) {
 //    Board board = findById(boardId);
 //    return new BoardResponseDto(board);
