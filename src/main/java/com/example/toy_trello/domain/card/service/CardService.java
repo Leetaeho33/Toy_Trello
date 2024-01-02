@@ -163,13 +163,14 @@ public class CardService implements CardServiceInterface {
   public ResponseEntity<?> deleteCard(Long cardId) {
     Card card = cardRepository.findById(cardId)
         .orElseThrow(() -> new IllegalArgumentException("선택한 카드는 존재하지 않습니다."));
-    cardRepository.delete(card);
-    //카드 없어진 자리에 바로 위부터 카드 마지막까지 -1을 한다.
-    List<Card> cardList = cardRepository.findByCardOrderGreaterThan(card.getCardId());
+
+    List<Card> cardList = cardRepository.findByCardOrderGreaterThan(card.getCardOrder());
     for(Card subCard: cardList){
       subCard.setCardOrder(subCard.getCardOrder()-1);
       cardRepository.save(subCard);
-    }
+    } //카드 없어진 자리에 바로 위부터 카드 마지막까지 -1을 한다.
+
+    cardRepository.delete(card);
 
     return ResponseEntity.ok().body("카드를 삭제 합니다.");
   }
@@ -234,7 +235,6 @@ public class CardService implements CardServiceInterface {
           .cardOrder(card.getCardOrder())//카드 순서 반환
           .build()
       );
-      //targetOrder를 cardOrderGreat과 같은 수로 하면 컬럼안 카드 갯수를 초과하는 cardOrder를 생성함 cardOrder+1 == cardOrderGreat
     }
     else if(Objects.equals(card.getColumn().getId(),targetColumnId)){
       Card cardSwitch = cardRepository.findByColumn_IdAndCardOrder(targetColumnId, targetOrder)
