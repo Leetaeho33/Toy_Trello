@@ -1,6 +1,5 @@
 package com.example.toy_trello.domain.team.controller;
 
-import com.example.toy_trello.domain.member.dto.MemberResponseDto;
 import com.example.toy_trello.domain.team.dto.TeamCreateRequestDto;
 import com.example.toy_trello.domain.team.dto.TeamCreateResponseDto;
 import com.example.toy_trello.domain.team.dto.TeamMemberRequestDto;
@@ -8,17 +7,11 @@ import com.example.toy_trello.domain.team.dto.TeamResponseDto;
 import com.example.toy_trello.domain.team.service.TeamService;
 import com.example.toy_trello.global.dto.CommonResponseDto;
 import com.example.toy_trello.global.security.UserDetailsImpl;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
