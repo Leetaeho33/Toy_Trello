@@ -4,6 +4,8 @@ import com.example.toy_trello.column.dto.requestDto.ColumnRequestDto;
 import com.example.toy_trello.column.dto.responseDto.ColumnResponseDto;
 import com.example.toy_trello.column.entity.Column;
 import com.example.toy_trello.column.service.ColumnService;
+import com.example.toy_trello.domain.card.dto.CardResponseDto;
+import com.example.toy_trello.domain.card.entity.Card;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -78,4 +80,16 @@ public class ColumnController {
         columnService.updateColumnOrder(id, newPosition);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+//    // Card 조회 API 추가
+//    @GetMapping("/{id}/cards")
+//    public ResponseEntity<List<CardResponseDto>> getCardsByColumnId(@PathVariable Long id) {
+//        List<Card> cards = columnService.getCardsByColumnId(id);
+//        List<CardResponseDto> responseDtos = cards.stream()
+//                .map(card -> new CardResponseDto(card.getCardId(), card.getCardName()))
+//                .collect(Collectors.toList());
+//        return new ResponseEntity<>(responseDtos, HttpStatus.OK);
+//    }
+
+
 }
