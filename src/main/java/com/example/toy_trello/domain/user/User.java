@@ -5,12 +5,11 @@ import com.example.toy_trello.domain.user.dto.UserProfileRequestDto;
 import com.example.toy_trello.domain.user.dto.UserSignupRequestDto;
 import com.example.toy_trello.domain.util.BaseEntity;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter

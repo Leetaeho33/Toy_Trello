@@ -1,6 +1,7 @@
 package com.example.toy_trello.domain.user;
 
 import com.example.toy_trello.domain.user.dto.*;
+import com.example.toy_trello.domain.user.exception.*;
 import com.example.toy_trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+
+import static com.example.toy_trello.domain.user.exception.UserErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,19 +24,19 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(userSignupRequestDto.getPassword());
 
         if (userSignupRequestDto.getUsername() == null) {
-            throw new IllegalArgumentException("username을 입력하세요.");
+            throw new RequiredUsernameException(REQUIRED_USERNAME);
         } else if (userSignupRequestDto.getPassword() == null) {
-            throw new IllegalArgumentException("password를 입력하세요.");
+            throw new RequiredPasswordException(REQUIRED_PASSWORD);
         } else if (userSignupRequestDto.getEmail() == null) {
-            throw new IllegalArgumentException("email을 입력하세요.");
+            throw new RequiredEmailException(REQUIRED_EMAIL);
         }
 
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자 입니다.");
+            throw new UsernameAlreadyExistsException(USERNAME_ALREADY_EXISTS);
         }
 
         if (!Objects.equals(userSignupRequestDto.getPassword(), userSignupRequestDto.getCheckPassword())) {
-            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            throw new PasswordConfirmationFailedException(PASSWORD_CONFIRMATION_FAILED);
         }
 
         User user = new User(userSignupRequestDto, encodedPassword);
@@ -44,7 +47,7 @@ public class UserService {
         String username = userLoginRequestDto.getUsername();
         String password = userLoginRequestDto.getPassword();
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("해당 username의 사용자가 없습니다."));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new NonUserExistException(NON_USER_EXIST));
         checkPassword(password, user);
     }
 
@@ -71,7 +74,7 @@ public class UserService {
         checkPassword(password, user);
 
         if (!Objects.equals(updatePasswordRequestDto.getNewPassword(), updatePasswordRequestDto.getCheckNewPassword())) {
-            throw new IllegalArgumentException("새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            throw new PasswordConfirmationFailedException(PASSWORD_CONFIRMATION_FAILED);
         }
 
         User passwordUpdatedUser = user.updatePassword(newPassword);
@@ -89,22 +92,21 @@ public class UserService {
 
     // 유저 존재 여부 검증 메서드
     private User checkIsExistUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 id의 유저가 없습니다."));
-        return user;
+        return userRepository.findById(userId).orElseThrow(() -> new NonUserExistException(NON_USER_EXIST));
     }
 
     // 본인 인증 메서드
     private static void verifyIsUserSelf(UserDetailsImpl userDetails, User user) {
 
         if (!Objects.equals(user.getUserId(), userDetails.getUser().getUserId())) {
-            throw new IllegalArgumentException("본인만 정보 수정 및 탈퇴 가능합니다.");
+            throw new SelfAuthenticationFailedException(SELF_AUTHENTICATION_FAILED);
         }
     }
 
     // password 검증 메서드
     private void checkPassword(String password, User user) {
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IncorrectPasswordException(INCORRECT_PASSWORD);
         }
     }
 }
