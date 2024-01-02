@@ -10,4 +10,8 @@ public interface ColumnService {
     Column createColumn(Column column);
     Column updateColumn(Long id, Column column);
     void deleteColumn(Long id);
+    Column createColumn(Long boardId, Column column); // 메서드 오버로딩
+
+    void updateColumnOrder(Long columnId, Long newPosition);
+
 }
