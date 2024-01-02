@@ -40,8 +40,4 @@
 
 
 ## API 명세
-
-![image]()
-![image]()
-![image]()
-![image]()
+https://documenter.getpostman.com/view/30925785/2s9YsFCZAQ
