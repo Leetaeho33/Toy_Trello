@@ -1,11 +1,13 @@
 package com.example.toy_trello.column.entity;
-import com.example.toy_trello.board.entity.Board;
+
+import com.example.toy_trello.domain.board.entity.Board;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 
 @Getter
 @Entity
+@Table (name = "columns")
 public class Column {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

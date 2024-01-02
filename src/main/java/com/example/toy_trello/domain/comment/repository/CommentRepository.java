@@ -1,4 +1,4 @@
-package com.example.toy_trello.domain.comment;
+package com.example.toy_trello.domain.comment.repository;
 
 import com.example.toy_trello.domain.comment.entity.Comment;
 import org.springframework.data.domain.Page;

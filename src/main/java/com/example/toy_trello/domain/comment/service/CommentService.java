@@ -1,4 +1,4 @@
-package com.example.toy_trello.domain.comment;
+package com.example.toy_trello.domain.comment.service;
 
 import com.example.toy_trello.domain.card.entity.Card;
 import com.example.toy_trello.domain.card.repository.CardRepository;
@@ -9,11 +9,11 @@ import com.example.toy_trello.domain.comment.entity.Comment;
 import com.example.toy_trello.domain.comment.exception.CommentErrorCode;
 import com.example.toy_trello.domain.comment.exception.CommentExistsException;
 import com.example.toy_trello.domain.comment.exception.OutOfRangeException;
+import com.example.toy_trello.domain.comment.repository.CommentRepository;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
