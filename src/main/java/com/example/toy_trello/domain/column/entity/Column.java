@@ -1,4 +1,4 @@
-package com.example.toy_trello.column.entity;
+package com.example.toy_trello.domain.column.entity;
 import com.example.toy_trello.domain.board.entity.Board;
 import com.example.toy_trello.domain.card.entity.Card;
 import jakarta.persistence.*;

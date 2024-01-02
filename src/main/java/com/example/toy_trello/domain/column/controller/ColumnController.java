@@ -1,12 +1,9 @@
-package com.example.toy_trello.column.controller;
+package com.example.toy_trello.domain.column.controller;
 
-import com.example.toy_trello.column.dto.requestDto.ColumnRequestDto;
-import com.example.toy_trello.column.dto.responseDto.ColumnResponseDto;
-import com.example.toy_trello.column.entity.Column;
-import com.example.toy_trello.column.service.ColumnService;
-import com.example.toy_trello.domain.card.dto.CardResponseDto;
-import com.example.toy_trello.domain.card.entity.Card;
-import lombok.Getter;
+import com.example.toy_trello.domain.column.dto.requestDto.ColumnRequestDto;
+import com.example.toy_trello.domain.column.dto.responseDto.ColumnResponseDto;
+import com.example.toy_trello.domain.column.entity.Column;
+import com.example.toy_trello.domain.column.service.ColumnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

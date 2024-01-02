@@ -1,6 +1,6 @@
-package com.example.toy_trello.column.service;
+package com.example.toy_trello.domain.column.service;
 
-import com.example.toy_trello.column.entity.Column;
+import com.example.toy_trello.domain.column.entity.Column;
 import com.example.toy_trello.domain.card.entity.Card;
 
 import java.util.List;
