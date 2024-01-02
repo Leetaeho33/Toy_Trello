@@ -1,8 +1,6 @@
 package com.example.toy_trello.domain.card.dto;
 
 
-import com.example.toy_trello.column.entity.Column;
-import com.example.toy_trello.domain.team.entity.Team;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

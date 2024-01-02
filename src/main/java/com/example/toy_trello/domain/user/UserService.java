@@ -2,7 +2,7 @@ package com.example.toy_trello.domain.user;
 
 import com.example.toy_trello.domain.user.dto.*;
 import com.example.toy_trello.domain.user.exception.*;
-import com.example.toy_trello.global.security.UserDetailsImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,8 @@
 package com.example.toy_trello.domain.card.entity;
 
-import com.example.toy_trello.column.entity.Column;
+import com.example.toy_trello.domain.column.entity.Column;
 import com.example.toy_trello.domain.card.dto.CardUpdateRequestDto;
 import com.example.toy_trello.domain.comment.entity.Comment;
-import com.example.toy_trello.domain.member.entity.Member;
 import com.example.toy_trello.domain.team.entity.Team;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.util.BaseEntity;

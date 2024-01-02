@@ -4,7 +4,7 @@ import com.example.toy_trello.domain.comment.service.CommentService;
 import com.example.toy_trello.domain.comment.dto.CommentRequestDto;
 import com.example.toy_trello.domain.comment.dto.CommentResponseDto;
 import com.example.toy_trello.global.dto.CommonResponseDto;
-import com.example.toy_trello.global.security.UserDetailsImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

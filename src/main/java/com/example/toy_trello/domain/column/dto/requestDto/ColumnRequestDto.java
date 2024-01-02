@@ -1,4 +1,4 @@
-package com.example.toy_trello.column.dto.requestDto;
+package com.example.toy_trello.domain.column.dto.requestDto;
 
 import lombok.Getter;
 

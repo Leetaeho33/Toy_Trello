@@ -6,7 +6,7 @@ import com.example.toy_trello.domain.board.dto.BoardResponseDto;
 import com.example.toy_trello.domain.board.dto.BoardUpdateRequestDto;
 import com.example.toy_trello.domain.board.service.BoardService;
 import com.example.toy_trello.global.dto.CommonResponseDto;
-import com.example.toy_trello.global.security.UserDetailsImpl;
+import com.example.toy_trello.domain.column.exception.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

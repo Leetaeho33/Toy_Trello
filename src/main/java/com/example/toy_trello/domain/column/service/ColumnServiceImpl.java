@@ -1,20 +1,18 @@
-package com.example.toy_trello.column.service;
+package com.example.toy_trello.domain.column.service;
 
-import com.example.toy_trello.column.entity.Column;
-import com.example.toy_trello.column.exception.BoardNotFoundException;
-import com.example.toy_trello.column.exception.ColumnNotFoundException;
-import com.example.toy_trello.column.repository.ColumnRepository;
+import com.example.toy_trello.domain.column.entity.Column;
+import com.example.toy_trello.domain.column.exception.BoardNotFoundException;
+import com.example.toy_trello.domain.column.exception.ColumnNotFoundException;
+import com.example.toy_trello.domain.column.repository.ColumnRepository;
 import com.example.toy_trello.domain.board.entity.Board;
 import com.example.toy_trello.domain.board.repository.BoardRepository;
 import com.example.toy_trello.domain.card.entity.Card;
+import com.example.toy_trello.domain.column.exception.ColumnErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import static com.example.toy_trello.column.exception.ColumnErrorCode.BOARD_NOT_FOUND;
-import static com.example.toy_trello.column.exception.ColumnErrorCode.COLUMN_NOT_FOUND;
 
 @Service
 public class ColumnServiceImpl implements ColumnService {
@@ -60,7 +58,7 @@ public class ColumnServiceImpl implements ColumnService {
             column.setBoard(board);
             return columnRepository.save(column);
         } else {
-            throw new BoardNotFoundException(BOARD_NOT_FOUND);
+            throw new BoardNotFoundException(ColumnErrorCode.BOARD_NOT_FOUND);
         }
     }
 
@@ -72,20 +70,20 @@ public class ColumnServiceImpl implements ColumnService {
             column.setOrder(newPosition);
             columnRepository.save(column);
         } else {
-            throw new ColumnNotFoundException(COLUMN_NOT_FOUND);
+            throw new ColumnNotFoundException(ColumnErrorCode.COLUMN_NOT_FOUND);
         }
     }
 
-//    @Override
-//    public List<Card> getCardsByColumnId(Long columnId) {
-//        Column column = columnRepository.findById(columnId).orElse(null);
-//
-//        if (column != null) {
-//            return column.getCards();
-//        } else {
-//            throw new ColumnNotFoundException(COLUMN_NOT_FOUND);
-//        }
-//    }
+    @Override
+    public List<Card> getCardsByColumnId(Long columnId) {
+        Column column = columnRepository.findById(columnId).orElse(null);
+
+        if (column != null) {
+            return column.getCards();
+        } else {
+            throw new ColumnNotFoundException(ColumnErrorCode.COLUMN_NOT_FOUND);
+        }
+    }
 
 
 //    // Card 조회 메서드 구현
