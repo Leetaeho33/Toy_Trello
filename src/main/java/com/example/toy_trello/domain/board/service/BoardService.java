@@ -1,9 +1,14 @@
 package com.example.toy_trello.domain.board.service;
 
+import static com.example.toy_trello.domain.board.exception.BoardErrorCode.NO_ALREADY_BOARD;
+import static com.example.toy_trello.domain.board.exception.BoardErrorCode.NO_BOARD;
+
 import com.example.toy_trello.domain.board.dto.BoardCreateRequestDto;
+import com.example.toy_trello.domain.board.dto.BoardPageDto;
 import com.example.toy_trello.domain.board.dto.BoardResponseDto;
 import com.example.toy_trello.domain.board.dto.BoardUpdateRequestDto;
 import com.example.toy_trello.domain.board.entity.Board;
+import com.example.toy_trello.domain.board.exception.BoardExistsException;
 import com.example.toy_trello.domain.board.repository.BoardRepository;
 import com.example.toy_trello.domain.user.User;
 import com.example.toy_trello.domain.user.UserRepository;
@@ -11,6 +16,9 @@ import com.example.toy_trello.global.security.UserDetailsImpl;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +37,19 @@ public class BoardService {
     boardRepository.save(board);
   }
 
-    public List<BoardResponseDto> getBoardList() {
-    List<Board> boardList = boardRepository.findAll();
+    public BoardPageDto getBoardList() {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Board> boardList = boardRepository.findAll(pageable);
     List<BoardResponseDto> boardResponseDto = new ArrayList<>();
 
     for(Board board : boardList) {
       boardResponseDto.add(new BoardResponseDto(board));
     }
-    return boardResponseDto;
+    return new BoardPageDto(boardResponseDto,
+        boardList.getTotalElements(),
+        boardList.getTotalPages(),
+        pageable.getPageNumber(),
+        boardResponseDto.size());
   }
 
 //  public Page<BoardResponseDto> getBoardList(Pageable pageable) {
@@ -55,7 +68,7 @@ public class BoardService {
 
   public BoardResponseDto getBoard(Long boardId) {
     Board board = boardRepository.findById(boardId).orElseThrow(() ->
-        new IllegalArgumentException("보드가 존재하지 않습니다."));
+        new BoardExistsException(NO_BOARD));  // 보드가 존재하지 않습니다.
 
     BoardResponseDto boardResponseDto = new BoardResponseDto(board);  // 이거 안해놓으면 modified가 포스트맨에서 제일 위로 올라오던데 혹시 다른 방법이 있을까요?
 
@@ -83,7 +96,7 @@ public class BoardService {
   @Transactional
   public void addUserToBoard(Long boardId, Long userId) {
     Board board = boardRepository.findById(boardId).orElseThrow(() ->
-        new IllegalArgumentException("보드가 존재하지 않습니다."));
+        new BoardExistsException(NO_BOARD));  // 보드가 존재하지 않습니다.
     User user = userRepository.findById(userId).orElseThrow(() ->
         new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
@@ -95,26 +108,13 @@ public class BoardService {
 
       boardRepository.save(board);
     } else {
-      throw new IllegalArgumentException("해당 사용자는 이미 보드에 추가되어 있습니다.");
+      throw new BoardExistsException(NO_ALREADY_BOARD);  // 해당 사용자는 이미 보드에 추가되어 있습니다.
     }
   }
 
-//  @Transactional
-//  public void deleteUserToBoard(Long boardId, Long userId) {
-//    Board board = boardRepository.findById(boardId).orElseThrow(() ->
-//        new IllegalArgumentException("보드가 존재하지 않습니다."));
-//    User user = userRepository.findById(userId).orElseThrow(() ->
-//        new IllegalArgumentException("사용자가 존재하지 않습니다."));
-//
-//    if (board.getUsers().contains(user)) {
-//      board.removeUser(user);
-//    }
-//
-//  }
-
   private Board idAndUsername(Long boardId, UserDetailsImpl userDetailsImpl) {
     Board board = boardRepository.findById(boardId).orElseThrow(() ->
-        new IllegalArgumentException("보드가 존재하지 않습니다."));
+        new BoardExistsException(NO_BOARD)); // 보드가 존재하지 않습니다.
 
     if (!board.getUsername().equals(userDetailsImpl.getUsername())) {
       throw new IllegalArgumentException("작성자만 게시글을 수정 및 삭제 할 수 있습니다.");
